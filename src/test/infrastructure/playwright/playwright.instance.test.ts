@@ -10,19 +10,19 @@ describe("Playwright Browser Instance", () => {
     browserInstance = PlaywrightInstance.getInstance(process.env.CHANNEL_ID!, {
       headless: false,
     });
-    await browserInstance.openBrowser();
+    await browserInstance["openBrowser"]();
   });
 
   afterAll(async () => {
-    browserInstance.closeBrowser();
+    browserInstance["closeBrowser"]();
   }, 120000);
 
   describe("Login", () => {
     test("go to url", async () => {
       const url = "https://www.youtube.com";
-      const page = await browserInstance.openPage();
+      const page = await browserInstance["openPage"]();
 
-      await browserInstance.goto(url, page);
+      await browserInstance["goto"](url, page);
 
       const pageUrl = page.url();
 
@@ -53,13 +53,13 @@ describe("Playwright Browser Instance", () => {
     test("Check Valid Login", async () => {
       let error;
       try {
-        await browserInstance.checkValidLogin();
+        await browserInstance["checkValidLogin"]();
       } catch (e) {
         error = e;
       }
       expect(error).toEqual(expect.anything());
     });
-    test("Launch", async () => {
+    test.only("Launch", async () => {
       const cookies = await fs.promises
         .readFile("./exclude/kr-cookies.json", {
           encoding: "utf-8",

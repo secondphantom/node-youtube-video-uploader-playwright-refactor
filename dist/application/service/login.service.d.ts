@@ -2,7 +2,6 @@ import { BrowserInstance } from "../interfaces/browser.instance";
 import { ResponseDto } from "../dto/response.dto";
 export type LoginServiceDto = {
     cookiesFilePath: string;
-    channelId: string;
 };
 export declare class LoginService {
     private browserInstance;

@@ -7,7 +7,6 @@ import { ResponseDto } from "../dto/response.dto";
 
 export type LoginServiceDto = {
   cookiesFilePath: string;
-  channelId: string;
 };
 
 export class LoginService {
@@ -28,17 +27,15 @@ export class LoginService {
       ) as Cookie[];
       return cookies;
     } catch (error) {
+      console.log(error);
       console.info("[ERROR]LOGIN SERVICE: get cookies by file");
       return null;
     }
   };
 
-  private getBrowserCookies = async (
-    cookiesFilePath: string,
-    channelId: string
-  ) => {
-    await this.browserInstance.goLoginPage({ channelId });
-    await this.rl.question("Login youtube channel. Did you login?\n");
+  private getBrowserCookies = async (cookiesFilePath: string) => {
+    await this.browserInstance.goLoginPage();
+    await this.rl.question("Login youtube channel. Did you login? (Enter)\n");
     const cookies = await this.browserInstance.getCookie();
     fs.writeFileSync(cookiesFilePath, JSON.stringify(cookies));
     return cookies;
@@ -48,10 +45,7 @@ export class LoginService {
     try {
       let cookies = this.getFileCookies(dto.cookiesFilePath);
       if (cookies === null) {
-        cookies = await this.getBrowserCookies(
-          dto.cookiesFilePath,
-          dto.channelId
-        );
+        cookies = await this.getBrowserCookies(dto.cookiesFilePath);
       }
       await this.browserInstance.launch({ cookies });
       return new ResponseDto({

@@ -50,13 +50,14 @@ class LoginService {
             return cookies;
         }
         catch (error) {
+            console.log(error);
             console.info("[ERROR]LOGIN SERVICE: get cookies by file");
             return null;
         }
     };
-    getBrowserCookies = async (cookiesFilePath, channelId) => {
-        await this.browserInstance.goLoginPage({ channelId });
-        await this.rl.question("Login youtube channel. Did you login?\n");
+    getBrowserCookies = async (cookiesFilePath) => {
+        await this.browserInstance.goLoginPage();
+        await this.rl.question("Login youtube channel. Did you login? (Enter)\n");
         const cookies = await this.browserInstance.getCookie();
         fs_1.default.writeFileSync(cookiesFilePath, JSON.stringify(cookies));
         return cookies;
@@ -65,7 +66,7 @@ class LoginService {
         try {
             let cookies = this.getFileCookies(dto.cookiesFilePath);
             if (cookies === null) {
-                cookies = await this.getBrowserCookies(dto.cookiesFilePath, dto.channelId);
+                cookies = await this.getBrowserCookies(dto.cookiesFilePath);
             }
             await this.browserInstance.launch({ cookies });
             return new response_dto_1.ResponseDto({

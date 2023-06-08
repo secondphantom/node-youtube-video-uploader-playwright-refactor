@@ -28,10 +28,14 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         super();
         this.channelId = channelId;
         this.launchOptions = launchOptions;
+        this.launchOptions = {
+            ignoreDefaultArgs: [
+                "--disable-component-extensions-with-background-pages",
+            ],
+            args: ["--disable-blink-features=AutomationControlled"],
+            ...launchOptions,
+        };
     }
-    goto = async (url, page) => {
-        await page.goto(url, { waitUntil: "load" });
-    };
     goLoginPage = async () => {
         await this.openBrowser();
         const page = await this.openPage();
@@ -50,17 +54,22 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         await this.browserContext.addCookies(cookies);
         await this.checkValidLogin();
         for (const pageKey in this.pageObj) {
-            console.log(pageKey);
+            const page = await this.browserContext.newPage();
             //@ts-ignore
-            this.pageObj[pageKey].page = await this.browserContext.newPage();
+            this.pageObj[pageKey].page = page;
+            this.goto(`https://studio.youtube.com/channel/UC${this.channelId}`, page);
         }
+    };
+    goto = async (url, page) => {
+        await page.goto(url, { waitUntil: "load" });
     };
     checkValidLogin = async () => {
         const page = await this.openPage();
-        await this.goto(`https://studio.youtube.com/channel/UC${this.channelId}`, page);
+        const url = `https://studio.youtube.com/channel/UC${this.channelId}`;
+        await this.goto(url, page);
         const pageUrl = page.url();
         await page.close();
-        if (pageUrl.includes("https://accounts.google.com/v3/signin")) {
+        if (pageUrl !== url) {
             throw new Error(`[ERROR] BrowserInstance: LOGIN REQUIRED`);
         }
     };
@@ -73,7 +82,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     closeBrowser = async () => {
         if (!this.browserContext)
             return;
-        this.browserContext.close();
+        await this.browserContext.close();
         this.browserContext = undefined;
     };
     openPage = async () => {

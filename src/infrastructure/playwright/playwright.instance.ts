@@ -7,7 +7,6 @@ import {
 } from "playwright";
 import {
   BrowserInstance,
-  GoLoginPageDto,
   LaunchDto,
   UpdateVideoDto,
   VideoIdSchema,
@@ -46,11 +45,14 @@ export class PlaywrightInstance extends BrowserInstance {
 
   constructor(private channelId: string, private launchOptions: LaunchOptions) {
     super();
+    this.launchOptions = {
+      ignoreDefaultArgs: [
+        "--disable-component-extensions-with-background-pages",
+      ],
+      args: ["--disable-blink-features=AutomationControlled"],
+      ...launchOptions,
+    };
   }
-
-  goto = async (url: string, page: Page) => {
-    await page.goto(url, { waitUntil: "load" });
-  };
 
   goLoginPage = async () => {
     await this.openBrowser();
@@ -75,39 +77,42 @@ export class PlaywrightInstance extends BrowserInstance {
     await this.browserContext!.addCookies(cookies);
     await this.checkValidLogin();
     for (const pageKey in this.pageObj) {
-      console.log(pageKey);
+      const page = await this.browserContext!.newPage();
       //@ts-ignore
-      this.pageObj[pageKey].page = await this.browserContext!.newPage();
+      this.pageObj[pageKey].page = page;
+      this.goto(`https://studio.youtube.com/channel/UC${this.channelId}`, page);
     }
   };
 
-  checkValidLogin = async () => {
+  private goto = async (url: string, page: Page) => {
+    await page.goto(url, { waitUntil: "load" });
+  };
+
+  private checkValidLogin = async () => {
     const page = await this.openPage();
-    await this.goto(
-      `https://studio.youtube.com/channel/UC${this.channelId}`,
-      page
-    );
+    const url = `https://studio.youtube.com/channel/UC${this.channelId}`;
+    await this.goto(url, page);
 
     const pageUrl = page.url();
     await page.close();
-    if (pageUrl.includes("https://accounts.google.com/v3/signin")) {
+    if (pageUrl !== url) {
       throw new Error(`[ERROR] BrowserInstance: LOGIN REQUIRED`);
     }
   };
 
-  openBrowser = async () => {
+  private openBrowser = async () => {
     if (this.browserContext) return;
     const browser = await chromium.launch(this.launchOptions);
     this.browserContext = await browser.newContext();
   };
 
-  closeBrowser = async () => {
+  private closeBrowser = async () => {
     if (!this.browserContext) return;
-    this.browserContext.close();
+    await this.browserContext.close();
     this.browserContext = undefined;
   };
 
-  openPage = async () => {
+  private openPage = async () => {
     this.browserLaunchCheck();
     const page = this.browserContext!.newPage();
     return page;

@@ -40,12 +40,10 @@ export type WriteCommentDto = CommentSchema & VideoIdSchema;
 export type LaunchDto = {
   cookies: Cookie[];
 };
-export type GoLoginPageDto = {
-  channelId: string;
-};
+
 export abstract class BrowserInstance {
   abstract launch: (dto: LaunchDto) => Promise<void>;
-  abstract goLoginPage: (dto: GoLoginPageDto) => Promise<Page>;
+  abstract goLoginPage: () => Promise<Page>;
   abstract getCookie: () => Promise<Cookie[]>;
 
   // abstract uploadVideo: (dto: UpdateVideoDto) => Promise<VideoIdSchema>;
