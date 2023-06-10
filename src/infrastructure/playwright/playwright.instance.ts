@@ -39,7 +39,7 @@ export class PlaywrightInstance extends BrowserInstance {
   };
 
   private browserContext: BrowserContext | undefined;
-  private pageObj: {
+  private _pageObj: {
     video: {
       page: Page | undefined;
       isBusy: boolean;
@@ -58,6 +58,10 @@ export class PlaywrightInstance extends BrowserInstance {
       isBusy: false,
     },
   };
+
+  get pageObj() {
+    return this._pageObj;
+  }
 
   constructor(
     private channelId: string,
@@ -99,11 +103,11 @@ export class PlaywrightInstance extends BrowserInstance {
     await this.openBrowser();
     await this.browserContext!.addCookies(cookies);
     await this.checkValidLogin();
-    for (const pageKey in this.pageObj) {
+    for (const pageKey in this._pageObj) {
       if (!this.pages.includes(pageKey as any)) continue;
       const page = await this.browserContext!.newPage();
       //@ts-ignore
-      this.pageObj[pageKey].page = page;
+      this._pageObj[pageKey].page = page;
       await this.goto(
         `https://studio.youtube.com/channel/UC${this.channelId}`,
         page
@@ -112,12 +116,12 @@ export class PlaywrightInstance extends BrowserInstance {
   };
 
   uploadVideo = async (dto: UploadVideoDto) => {
-    this.pageObj.video.isBusy = true;
+    this._pageObj.video.isBusy = true;
     const result = await PlaywrightUpload.getInstance(this).uploadVideo(
-      this.pageObj.video.page!,
+      this._pageObj.video.page!,
       dto
     );
-    this.pageObj.video.isBusy = false;
+    this._pageObj.video.isBusy = false;
     return result;
   };
 

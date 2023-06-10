@@ -26,22 +26,25 @@ export interface YoutubeUtilConfig {
 export class YoutubeUtil {
   private LoginController;
   private VideoController;
+  private browserInstance: PlaywrightInstance;
 
   constructor(config: YoutubeUtilConfig) {
     const { cookiesFilePath, channelId, youtubeLocale, launchOptions, pages } =
       config;
-    const browserInstance = PlaywrightInstance.getInstance({
+    this.browserInstance = PlaywrightInstance.getInstance({
       channelId,
       youtubeLocale,
       pages,
       launchOptions,
     });
     this.LoginController = LoginController.getInstance(
-      LoginService.getInstance(browserInstance, cookiesFilePath)
+      LoginService.getInstance(this.browserInstance, cookiesFilePath)
     );
     this.VideoController = VideoValidatorController.getInstance(
       VideoValidator.getInstance(),
-      VideoController.getInstance(VideoService.getInstance(browserInstance))
+      VideoController.getInstance(
+        VideoService.getInstance(this.browserInstance)
+      )
     );
   }
 
@@ -54,6 +57,10 @@ export class YoutubeUtil {
     const result = await this.VideoController.uploadVideo(dto);
     return this.responseResolver<VideoIdSchema>(result);
   };
+
+  get pageObj() {
+    return this.browserInstance.pageObj;
+  }
 
   private responseResolver = <T>(responseDto: ResponseDto) => {
     const {

@@ -11,16 +11,17 @@ const video_controller_1 = require("../../controller/video/video.controller");
 class YoutubeUtil {
     LoginController;
     VideoController;
+    browserInstance;
     constructor(config) {
         const { cookiesFilePath, channelId, youtubeLocale, launchOptions, pages } = config;
-        const browserInstance = playwright_instance_1.PlaywrightInstance.getInstance({
+        this.browserInstance = playwright_instance_1.PlaywrightInstance.getInstance({
             channelId,
             youtubeLocale,
             pages,
             launchOptions,
         });
-        this.LoginController = login_controller_1.LoginController.getInstance(login_service_1.LoginService.getInstance(browserInstance, cookiesFilePath));
-        this.VideoController = video_validator_1.VideoValidatorController.getInstance(video_validator_2.VideoValidator.getInstance(), video_controller_1.VideoController.getInstance(video_service_1.VideoService.getInstance(browserInstance)));
+        this.LoginController = login_controller_1.LoginController.getInstance(login_service_1.LoginService.getInstance(this.browserInstance, cookiesFilePath));
+        this.VideoController = video_validator_1.VideoValidatorController.getInstance(video_validator_2.VideoValidator.getInstance(), video_controller_1.VideoController.getInstance(video_service_1.VideoService.getInstance(this.browserInstance)));
     }
     login = async () => {
         const result = await this.LoginController.login();
@@ -30,6 +31,9 @@ class YoutubeUtil {
         const result = await this.VideoController.uploadVideo(dto);
         return this.responseResolver(result);
     };
+    get pageObj() {
+        return this.browserInstance.pageObj;
+    }
     responseResolver = (responseDto) => {
         const { payload: { data, success }, } = responseDto;
         if (success) {

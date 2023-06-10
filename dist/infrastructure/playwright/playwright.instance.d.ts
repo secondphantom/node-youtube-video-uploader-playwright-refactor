@@ -13,7 +13,17 @@ export declare class PlaywrightInstance extends BrowserInstance {
         launchOptions?: LaunchOptions | undefined;
     }) => PlaywrightInstance;
     private browserContext;
-    private pageObj;
+    private _pageObj;
+    get pageObj(): {
+        video: {
+            page: Page | undefined;
+            isBusy: boolean;
+        };
+        comment: {
+            page: Page | undefined;
+            isBusy: boolean;
+        };
+    };
     constructor(channelId: string, youtubeLocale: string, pages: ("video" | "comment")[], launchOptions?: LaunchOptions | undefined);
     goLoginPage: () => Promise<Page>;
     getCookie: () => Promise<Cookie[]>;
