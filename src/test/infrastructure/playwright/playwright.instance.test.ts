@@ -2,14 +2,20 @@ import { PlaywrightInstance } from "../../../infrastructure/playwright/playwrigh
 import { Page } from "playwright";
 import fs from "fs";
 import dotenv from "dotenv";
+import { UploadVideoDto } from "../../../application/interfaces/browser.instance";
+import { delay } from "../../../infrastructure/common.method";
 dotenv.config();
 
 describe("Playwright Browser Instance", () => {
   let browserInstance: PlaywrightInstance;
   beforeAll(async () => {
-    browserInstance = PlaywrightInstance.getInstance(process.env.CHANNEL_ID!, {
-      headless: false,
-    });
+    browserInstance = PlaywrightInstance.getInstance(
+      process.env.CHANNEL_ID!,
+      process.env.YOUTUBE_LOCALE!,
+      {
+        headless: false,
+      }
+    );
     await browserInstance["openBrowser"]();
   });
 
@@ -17,7 +23,7 @@ describe("Playwright Browser Instance", () => {
     browserInstance["closeBrowser"]();
   }, 120000);
 
-  describe("Login", () => {
+  describe.skip("Login", () => {
     test("go to url", async () => {
       const url = "https://www.youtube.com";
       const page = await browserInstance["openPage"]();
@@ -61,14 +67,50 @@ describe("Playwright Browser Instance", () => {
     });
     test.only("Launch", async () => {
       const cookies = await fs.promises
-        .readFile("./exclude/kr-cookies.json", {
+        .readFile("./exclude/test-cookies.json", {
           encoding: "utf-8",
         })
         .then(JSON.parse);
 
       await browserInstance.launch({ cookies });
-    });
+      await delay(120000);
+    }, 120000);
   });
 
-  describe("Video", () => {});
+  describe.only("Video", () => {
+    test.only("Upload Video", async () => {
+      const cookies = (await fs.promises
+        .readFile(process.env.COOKIES_FILE_PATH!, {
+          encoding: "utf-8",
+        })
+        .then(JSON.parse)) as any;
+      await browserInstance.launch({
+        cookies,
+      });
+
+      const dto: UploadVideoDto = {
+        meta: {
+          title: "테스트",
+          description: "테스트 설명",
+          // playlist: ["테스티", "추가"],
+          tags: ["테그1", "테그2"],
+        },
+        filePath: {
+          video: "./video.mp4",
+          thumbnail: "./thumbnail.jpg",
+        },
+        config: {
+          visibility: "schedule",
+          notifySubscribers: false,
+          schedule: new Date(new Date().setHours(new Date().getHours() + 1)),
+        },
+      };
+
+      const { videoId } = await browserInstance.uploadVideo(dto);
+
+      expect(videoId).toEqual(expect.any(String));
+      // console.log(videoId);
+      // await delay(10000);
+    }, 120000);
+  });
 });

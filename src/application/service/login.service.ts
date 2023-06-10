@@ -5,20 +5,36 @@ import { stdin as input, stdout as output } from "process";
 import * as readline from "readline/promises";
 import { ResponseDto } from "../dto/response.dto";
 
-export type LoginServiceDto = {
-  cookiesFilePath: string;
-};
+// export type LoginServiceDto = {
+//   cookiesFilePath: string;
+// };
 
 export class LoginService {
   static instance: LoginService | undefined;
 
-  static getInstance = (browserInstance: BrowserInstance) => {
+  static getInstance = (
+    browserInstance: BrowserInstance,
+    cookiesFilePath: string
+  ) => {
     if (this.instance) return this.instance;
-    this.instance = new LoginService(browserInstance);
+    this.instance = new LoginService(browserInstance, cookiesFilePath);
     return this.instance;
   };
+
   private rl = readline.createInterface({ input, output });
-  constructor(private browserInstance: BrowserInstance) {}
+  constructor(
+    private browserInstance: BrowserInstance,
+    private cookiesFilePath: string
+  ) {}
+
+  login = async () => {
+    let cookies = this.getFileCookies(this.cookiesFilePath);
+    if (cookies === null) {
+      cookies = await this.getBrowserCookies(this.cookiesFilePath);
+    }
+    await this.browserInstance.launch({ cookies });
+    return true;
+  };
 
   private getFileCookies = (cookiesFilePath: string) => {
     try {
@@ -27,7 +43,6 @@ export class LoginService {
       ) as Cookie[];
       return cookies;
     } catch (error) {
-      console.log(error);
       console.info("[ERROR]LOGIN SERVICE: get cookies by file");
       return null;
     }
@@ -39,32 +54,5 @@ export class LoginService {
     const cookies = await this.browserInstance.getCookie();
     fs.writeFileSync(cookiesFilePath, JSON.stringify(cookies));
     return cookies;
-  };
-
-  login = async (dto: LoginServiceDto) => {
-    try {
-      let cookies = this.getFileCookies(dto.cookiesFilePath);
-      if (cookies === null) {
-        cookies = await this.getBrowserCookies(dto.cookiesFilePath);
-      }
-      await this.browserInstance.launch({ cookies });
-      return new ResponseDto({
-        payload: {
-          success: true,
-          data: {
-            message: "LOGIN SUCCESS",
-          },
-        },
-      });
-    } catch (error: any) {
-      return new ResponseDto({
-        payload: {
-          success: false,
-          data: {
-            message: error.message,
-          },
-        },
-      });
-    }
   };
 }

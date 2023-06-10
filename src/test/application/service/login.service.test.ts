@@ -6,10 +6,17 @@ describe.only("Service Login", () => {
   let browserInstance: PlaywrightInstance;
   let loginService: LoginService;
   beforeAll(async () => {
-    browserInstance = PlaywrightInstance.getInstance("nPEopXn0iYS9B1kml6Ioyg", {
-      headless: false,
-    });
-    loginService = LoginService.getInstance(browserInstance);
+    browserInstance = PlaywrightInstance.getInstance(
+      process.env.CHANNEL_ID!,
+      process.env.YOUTUBE_LOCALE!,
+      {
+        headless: false,
+      }
+    );
+    loginService = LoginService.getInstance(
+      browserInstance,
+      process.env.COOKIES_FILE_PATH!
+    );
   });
 
   afterAll(async () => {}, 120000);
@@ -40,12 +47,8 @@ describe.only("Service Login", () => {
 
   describe.only("Login", () => {
     test("Success", async () => {
-      const dto = {
-        cookiesFilePath: "./exclude/test-cookies.json",
-      };
-
-      const res = await loginService.login(dto);
-      expect(res.payload.success).toEqual(true);
+      const res = await loginService.login();
+      expect(res).toEqual(true);
     }, 120000);
   });
 });

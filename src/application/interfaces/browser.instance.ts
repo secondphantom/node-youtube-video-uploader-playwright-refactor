@@ -1,11 +1,11 @@
 import { Cookie, Page } from "playwright";
 
 export interface UploadConfig {
-  config?:
-    | {
-        visibility: "public" | "unlisted" | "private";
-      }
-    | { schedule: Date };
+  config?: {
+    visibility?: "public" | "unlisted" | "private" | "schedule";
+    schedule?: Date;
+    notifySubscribers?: boolean;
+  };
 }
 
 export interface VideoFileSchema {
@@ -46,7 +46,7 @@ export abstract class BrowserInstance {
   abstract goLoginPage: () => Promise<Page>;
   abstract getCookie: () => Promise<Cookie[]>;
 
-  // abstract uploadVideo: (dto: UpdateVideoDto) => Promise<VideoIdSchema>;
+  abstract uploadVideo: (dto: UploadVideoDto) => Promise<VideoIdSchema>;
   // abstract deleteVideo: (dto: DeleteVideoDto) => Promise<void>;
   // abstract updateVideo: (dto: UpdateVideoDto) => Promise<void>;
 

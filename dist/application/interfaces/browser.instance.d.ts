@@ -1,9 +1,9 @@
 import { Cookie, Page } from "playwright";
 export interface UploadConfig {
     config?: {
-        visibility: "public" | "unlisted" | "private";
-    } | {
-        schedule: Date;
+        visibility?: "public" | "unlisted" | "private" | "schedule";
+        schedule?: Date;
+        notifySubscribers?: boolean;
     };
 }
 export interface VideoFileSchema {
@@ -38,4 +38,5 @@ export declare abstract class BrowserInstance {
     abstract launch: (dto: LaunchDto) => Promise<void>;
     abstract goLoginPage: () => Promise<Page>;
     abstract getCookie: () => Promise<Cookie[]>;
+    abstract uploadVideo: (dto: UploadVideoDto) => Promise<VideoIdSchema>;
 }
