@@ -9,13 +9,14 @@ import { delay } from "../../../infrastructure/common.method";
 describe("Playwright Browser Instance", () => {
   let browserInstance: PlaywrightInstance;
   beforeAll(async () => {
-    browserInstance = PlaywrightInstance.getInstance(
-      process.env.CHANNEL_ID!,
-      process.env.YOUTUBE_LOCALE!,
-      {
+    browserInstance = PlaywrightInstance.getInstance({
+      channelId: process.env.CHANNEL_ID!,
+      youtubeLocale: process.env.YOUTUBE_LOCALE!,
+      pages: ["video", "comment"],
+      launchOptions: {
         headless: false,
-      }
-    );
+      },
+    });
     await browserInstance["openBrowser"]();
   });
 

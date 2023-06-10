@@ -12,8 +12,13 @@ class YoutubeUtil {
     LoginController;
     VideoController;
     constructor(config) {
-        const { cookiesFilePath, channelId, youtubeLocale, launchOptions } = config;
-        const browserInstance = playwright_instance_1.PlaywrightInstance.getInstance(channelId, youtubeLocale, launchOptions);
+        const { cookiesFilePath, channelId, youtubeLocale, launchOptions, pages } = config;
+        const browserInstance = playwright_instance_1.PlaywrightInstance.getInstance({
+            channelId,
+            youtubeLocale,
+            pages,
+            launchOptions,
+        });
         this.LoginController = login_controller_1.LoginController.getInstance(login_service_1.LoginService.getInstance(browserInstance, cookiesFilePath));
         this.VideoController = video_validator_1.VideoValidatorController.getInstance(video_validator_2.VideoValidator.getInstance(), video_controller_1.VideoController.getInstance(video_service_1.VideoService.getInstance(browserInstance)));
     }

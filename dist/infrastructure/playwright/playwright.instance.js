@@ -8,12 +8,13 @@ const common_method_1 = require("../common.method");
 class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     channelId;
     youtubeLocale;
+    pages;
     launchOptions;
     static instance;
-    static getInstance = (channelId, youtubeLocale, launchOptions) => {
+    static getInstance = ({ channelId, youtubeLocale, pages, launchOptions, }) => {
         if (this.instance)
             return this.instance;
-        this.instance = new PlaywrightInstance(channelId, youtubeLocale, launchOptions);
+        this.instance = new PlaywrightInstance(channelId, youtubeLocale, pages && pages.length > 0 ? pages : ["video", "comment"], launchOptions);
         return this.instance;
     };
     browserContext;
@@ -27,10 +28,11 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
             isBusy: false,
         },
     };
-    constructor(channelId, youtubeLocale, launchOptions) {
+    constructor(channelId, youtubeLocale, pages, launchOptions) {
         super();
         this.channelId = channelId;
         this.youtubeLocale = youtubeLocale;
+        this.pages = pages;
         this.launchOptions = launchOptions;
         this.launchOptions = {
             ignoreDefaultArgs: [
@@ -59,6 +61,8 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         await this.browserContext.addCookies(cookies);
         await this.checkValidLogin();
         for (const pageKey in this.pageObj) {
+            if (!this.pages.includes(pageKey))
+                continue;
             const page = await this.browserContext.newPage();
             //@ts-ignore
             this.pageObj[pageKey].page = page;
@@ -66,7 +70,9 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         }
     };
     uploadVideo = async (dto) => {
-        const result = playwright_video_upload_1.PlaywrightUpload.getInstance(this).uploadVideo(this.pageObj.video.page, dto);
+        this.pageObj.video.isBusy = true;
+        const result = await playwright_video_upload_1.PlaywrightUpload.getInstance(this).uploadVideo(this.pageObj.video.page, dto);
+        this.pageObj.video.isBusy = false;
         return result;
     };
     goto = async (url, page) => {

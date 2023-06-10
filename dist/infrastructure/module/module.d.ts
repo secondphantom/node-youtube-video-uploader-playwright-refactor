@@ -4,6 +4,7 @@ export interface YoutubeUtilConfig {
     cookiesFilePath: string;
     channelId: string;
     youtubeLocale: string;
+    pages?: ("video" | "comment")[];
     launchOptions?: LaunchOptions;
 }
 export declare class YoutubeUtil {

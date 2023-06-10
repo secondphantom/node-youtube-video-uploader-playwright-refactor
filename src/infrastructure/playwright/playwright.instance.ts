@@ -16,15 +16,22 @@ import { delay } from "../common.method";
 export class PlaywrightInstance extends BrowserInstance {
   static instance: PlaywrightInstance | undefined;
 
-  static getInstance = (
-    channelId: string,
-    youtubeLocale: string,
-    launchOptions?: LaunchOptions
-  ) => {
+  static getInstance = ({
+    channelId,
+    youtubeLocale,
+    pages,
+    launchOptions,
+  }: {
+    channelId: string;
+    youtubeLocale: string;
+    pages?: ("video" | "comment")[];
+    launchOptions?: LaunchOptions;
+  }) => {
     if (this.instance) return this.instance;
     this.instance = new PlaywrightInstance(
       channelId,
       youtubeLocale,
+      pages && pages.length > 0 ? pages : ["video", "comment"],
       launchOptions
     );
 
@@ -55,6 +62,7 @@ export class PlaywrightInstance extends BrowserInstance {
   constructor(
     private channelId: string,
     private youtubeLocale: string,
+    private pages: ("video" | "comment")[],
     private launchOptions?: LaunchOptions
   ) {
     super();
@@ -92,6 +100,7 @@ export class PlaywrightInstance extends BrowserInstance {
     await this.browserContext!.addCookies(cookies);
     await this.checkValidLogin();
     for (const pageKey in this.pageObj) {
+      if (!this.pages.includes(pageKey as any)) continue;
       const page = await this.browserContext!.newPage();
       //@ts-ignore
       this.pageObj[pageKey].page = page;
@@ -103,10 +112,12 @@ export class PlaywrightInstance extends BrowserInstance {
   };
 
   uploadVideo = async (dto: UploadVideoDto) => {
-    const result = PlaywrightUpload.getInstance(this).uploadVideo(
+    this.pageObj.video.isBusy = true;
+    const result = await PlaywrightUpload.getInstance(this).uploadVideo(
       this.pageObj.video.page!,
       dto
     );
+    this.pageObj.video.isBusy = false;
     return result;
   };
 

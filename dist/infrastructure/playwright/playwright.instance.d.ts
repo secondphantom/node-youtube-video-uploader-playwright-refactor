@@ -3,12 +3,18 @@ import { BrowserInstance, LaunchDto, UploadVideoDto } from "../../application/in
 export declare class PlaywrightInstance extends BrowserInstance {
     private channelId;
     private youtubeLocale;
+    private pages;
     private launchOptions?;
     static instance: PlaywrightInstance | undefined;
-    static getInstance: (channelId: string, youtubeLocale: string, launchOptions?: LaunchOptions) => PlaywrightInstance;
+    static getInstance: ({ channelId, youtubeLocale, pages, launchOptions, }: {
+        channelId: string;
+        youtubeLocale: string;
+        pages?: ("video" | "comment")[] | undefined;
+        launchOptions?: LaunchOptions | undefined;
+    }) => PlaywrightInstance;
     private browserContext;
     private pageObj;
-    constructor(channelId: string, youtubeLocale: string, launchOptions?: LaunchOptions | undefined);
+    constructor(channelId: string, youtubeLocale: string, pages: ("video" | "comment")[], launchOptions?: LaunchOptions | undefined);
     goLoginPage: () => Promise<Page>;
     getCookie: () => Promise<Cookie[]>;
     launch: (dto: LaunchDto) => Promise<void>;

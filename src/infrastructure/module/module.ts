@@ -19,6 +19,7 @@ export interface YoutubeUtilConfig {
   cookiesFilePath: string;
   channelId: string;
   youtubeLocale: string;
+  pages?: ("video" | "comment")[];
   launchOptions?: LaunchOptions;
 }
 
@@ -27,12 +28,14 @@ export class YoutubeUtil {
   private VideoController;
 
   constructor(config: YoutubeUtilConfig) {
-    const { cookiesFilePath, channelId, youtubeLocale, launchOptions } = config;
-    const browserInstance = PlaywrightInstance.getInstance(
+    const { cookiesFilePath, channelId, youtubeLocale, launchOptions, pages } =
+      config;
+    const browserInstance = PlaywrightInstance.getInstance({
       channelId,
       youtubeLocale,
-      launchOptions
-    );
+      pages,
+      launchOptions,
+    });
     this.LoginController = LoginController.getInstance(
       LoginService.getInstance(browserInstance, cookiesFilePath)
     );
