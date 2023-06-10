@@ -19,7 +19,7 @@ export class PlaywrightInstance extends BrowserInstance {
   static getInstance = (
     channelId: string,
     youtubeLocale: string,
-    launchOptions: LaunchOptions
+    launchOptions?: LaunchOptions
   ) => {
     if (this.instance) return this.instance;
     this.instance = new PlaywrightInstance(
@@ -55,7 +55,7 @@ export class PlaywrightInstance extends BrowserInstance {
   constructor(
     private channelId: string,
     private youtubeLocale: string,
-    private launchOptions: LaunchOptions
+    private launchOptions?: LaunchOptions
   ) {
     super();
     this.launchOptions = {

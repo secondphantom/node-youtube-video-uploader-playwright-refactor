@@ -4,6 +4,7 @@ import {
 } from "../../application/interfaces/browser.instance";
 import { VideoValidatorInterface } from "../../controller/video/video.interface";
 import z from "zod";
+import { fromZodError } from "zod-validation-error";
 
 export class VideoValidator implements VideoValidatorInterface {
   static instance: VideoValidator | undefined;
@@ -45,6 +46,12 @@ export class VideoValidator implements VideoValidatorInterface {
   });
 
   uploadVideo = (dto: UploadVideoDto) => {
-    return this.uploadVideoDto.parse(dto);
+    try {
+      const result = this.uploadVideoDto.parse(dto);
+      return result;
+    } catch (error: any) {
+      const validationError = fromZodError(error);
+      throw new Error(validationError.message);
+    }
   };
 }

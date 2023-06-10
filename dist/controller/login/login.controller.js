@@ -1,22 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VideoController = void 0;
+exports.LoginController = void 0;
 const response_dto_1 = require("../../application/dto/response.dto");
-class VideoController {
-    videoService;
+class LoginController {
+    loginService;
     static instance;
-    static getInstance = (videoService) => {
+    static getInstance = (loginService) => {
         if (this.instance)
             return this.instance;
-        this.instance = new VideoController(videoService);
+        this.instance = new LoginController(loginService);
         return this.instance;
     };
-    constructor(videoService) {
-        this.videoService = videoService;
+    constructor(loginService) {
+        this.loginService = loginService;
     }
-    uploadVideo = async (dto) => {
+    login = async () => {
         try {
-            const result = await this.videoService.uploadVideo(dto);
+            const result = await this.loginService.login();
             return new response_dto_1.ResponseDto({
                 payload: {
                     success: true,
@@ -36,5 +36,5 @@ class VideoController {
         }
     };
 }
-exports.VideoController = VideoController;
-//# sourceMappingURL=video.controller.js.map
+exports.LoginController = LoginController;
+//# sourceMappingURL=login.controller.js.map

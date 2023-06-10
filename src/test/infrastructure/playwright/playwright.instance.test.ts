@@ -2,9 +2,9 @@ import { PlaywrightInstance } from "../../../infrastructure/playwright/playwrigh
 import { Page } from "playwright";
 import fs from "fs";
 import dotenv from "dotenv";
+dotenv.config();
 import { UploadVideoDto } from "../../../application/interfaces/browser.instance";
 import { delay } from "../../../infrastructure/common.method";
-dotenv.config();
 
 describe("Playwright Browser Instance", () => {
   let browserInstance: PlaywrightInstance;

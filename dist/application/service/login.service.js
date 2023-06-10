@@ -54,7 +54,7 @@ class LoginService {
             cookies = await this.getBrowserCookies(this.cookiesFilePath);
         }
         await this.browserInstance.launch({ cookies });
-        return true;
+        return { isLogin: true };
     };
     getFileCookies = (cookiesFilePath) => {
         try {

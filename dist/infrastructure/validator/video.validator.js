@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VideoValidator = void 0;
 const zod_1 = __importDefault(require("zod"));
+const zod_validation_error_1 = require("zod-validation-error");
 class VideoValidator {
     static instance;
     static getInstance = () => {
@@ -43,7 +44,14 @@ class VideoValidator {
         config: this.uploadConfigSchema,
     });
     uploadVideo = (dto) => {
-        return this.uploadVideoDto.parse(dto);
+        try {
+            const result = this.uploadVideoDto.parse(dto);
+            return result;
+        }
+        catch (error) {
+            const validationError = (0, zod_validation_error_1.fromZodError)(error);
+            throw new Error(validationError.message);
+        }
     };
 }
 exports.VideoValidator = VideoValidator;

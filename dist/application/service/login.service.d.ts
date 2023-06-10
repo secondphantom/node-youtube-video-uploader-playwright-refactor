@@ -6,7 +6,9 @@ export declare class LoginService {
     static getInstance: (browserInstance: BrowserInstance, cookiesFilePath: string) => LoginService;
     private rl;
     constructor(browserInstance: BrowserInstance, cookiesFilePath: string);
-    login: () => Promise<boolean>;
+    login: () => Promise<{
+        isLogin: boolean;
+    }>;
     private getFileCookies;
     private getBrowserCookies;
 }

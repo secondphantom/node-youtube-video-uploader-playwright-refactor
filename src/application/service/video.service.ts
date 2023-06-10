@@ -16,23 +16,8 @@ export class VideoService {
   constructor(private browserInstance: BrowserInstance) {}
 
   uploadVideo = async (dto: UploadVideoDto) => {
-    try {
-      const result = await this.browserInstance.uploadVideo(dto);
-      return new ResponseDto({
-        payload: {
-          success: true,
-          data: result,
-        },
-      });
-    } catch (error: any) {
-      return new ResponseDto({
-        payload: {
-          success: false,
-          data: {
-            message: error.message,
-          },
-        },
-      });
-    }
+    const result = await this.browserInstance.uploadVideo(dto);
+
+    return result;
   };
 }
