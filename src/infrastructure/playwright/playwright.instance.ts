@@ -70,15 +70,27 @@ export class PlaywrightInstance extends BrowserInstance {
     private launchOptions?: LaunchOptions
   ) {
     super();
-    this.launchOptions = {
-      ignoreDefaultArgs: [
-        "--disable-component-extensions-with-background-pages",
-      ],
-      args: ["--disable-blink-features=AutomationControlled"],
-      headless: false,
 
+    const ignoreDefaultArgs = [
+      "--disable-component-extensions-with-background-pages",
+      ...(launchOptions
+        ? launchOptions.ignoreDefaultArgs
+          ? (launchOptions.ignoreDefaultArgs as any)
+          : []
+        : []),
+    ];
+    const args = [
+      "--disable-blink-features=AutomationControlled",
+      ...(launchOptions ? (launchOptions.args ? launchOptions.args : []) : []),
+    ];
+    launchOptions = {
+      headless: true,
       ...launchOptions,
+      ignoreDefaultArgs,
+      args,
     };
+
+    this.launchOptions = launchOptions;
   }
 
   goLoginPage = async () => {
@@ -116,13 +128,19 @@ export class PlaywrightInstance extends BrowserInstance {
   };
 
   uploadVideo = async (dto: UploadVideoDto) => {
-    this._pageObj.video.isBusy = true;
-    const result = await PlaywrightUpload.getInstance(this).uploadVideo(
-      this._pageObj.video.page!,
-      dto
-    );
-    this._pageObj.video.isBusy = false;
-    return result;
+    try {
+      this._pageObj.video.isBusy = true;
+      const result = await PlaywrightUpload.getInstance(this).uploadVideo(
+        this._pageObj.video.page!,
+        dto
+      );
+      this._pageObj.video.isBusy = false;
+      return result;
+    } catch (error: any) {
+      this._pageObj.video.isBusy = false;
+      console.error(`Upload Fail ${JSON.stringify(dto)}`);
+      throw new Error(error.message);
+    }
   };
 
   private goto = async (url: string, page: Page) => {
@@ -149,8 +167,13 @@ export class PlaywrightInstance extends BrowserInstance {
 
   private openBrowser = async () => {
     if (this.browserContext) return;
-    const browser = await chromium.launch(this.launchOptions);
-    this.browserContext = await browser.newContext();
+    // const browser = await chromium.launch(this.launchOptions);
+    // this.browserContext = await browser.newContext();
+    this.browserContext = await chromium.launchPersistentContext("./exclude", {
+      ...this.launchOptions,
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    });
   };
 
   private closeBrowser = async () => {
@@ -161,7 +184,7 @@ export class PlaywrightInstance extends BrowserInstance {
 
   private openPage = async () => {
     this.browserLaunchCheck();
-    const page = this.browserContext!.newPage();
+    const page = await this.browserContext!.newPage();
     return page;
   };
 

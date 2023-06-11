@@ -37,14 +37,25 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         this.youtubeLocale = youtubeLocale;
         this.pages = pages;
         this.launchOptions = launchOptions;
-        this.launchOptions = {
-            ignoreDefaultArgs: [
-                "--disable-component-extensions-with-background-pages",
-            ],
-            args: ["--disable-blink-features=AutomationControlled"],
-            headless: false,
+        const ignoreDefaultArgs = [
+            "--disable-component-extensions-with-background-pages",
+            ...(launchOptions
+                ? launchOptions.ignoreDefaultArgs
+                    ? launchOptions.ignoreDefaultArgs
+                    : []
+                : []),
+        ];
+        const args = [
+            "--disable-blink-features=AutomationControlled",
+            ...(launchOptions ? (launchOptions.args ? launchOptions.args : []) : []),
+        ];
+        launchOptions = {
+            headless: true,
             ...launchOptions,
+            ignoreDefaultArgs,
+            args,
         };
+        this.launchOptions = launchOptions;
     }
     goLoginPage = async () => {
         await this.openBrowser();
@@ -73,10 +84,17 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         }
     };
     uploadVideo = async (dto) => {
-        this._pageObj.video.isBusy = true;
-        const result = await playwright_video_upload_1.PlaywrightUpload.getInstance(this).uploadVideo(this._pageObj.video.page, dto);
-        this._pageObj.video.isBusy = false;
-        return result;
+        try {
+            this._pageObj.video.isBusy = true;
+            const result = await playwright_video_upload_1.PlaywrightUpload.getInstance(this).uploadVideo(this._pageObj.video.page, dto);
+            this._pageObj.video.isBusy = false;
+            return result;
+        }
+        catch (error) {
+            this._pageObj.video.isBusy = false;
+            console.error(`Upload Fail ${JSON.stringify(dto)}`);
+            throw new Error(error.message);
+        }
     };
     goto = async (url, page) => {
         await page.goto(url, { waitUntil: "load" });
@@ -98,8 +116,12 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     openBrowser = async () => {
         if (this.browserContext)
             return;
-        const browser = await playwright_1.chromium.launch(this.launchOptions);
-        this.browserContext = await browser.newContext();
+        // const browser = await chromium.launch(this.launchOptions);
+        // this.browserContext = await browser.newContext();
+        this.browserContext = await playwright_1.chromium.launchPersistentContext("./exclude", {
+            ...this.launchOptions,
+            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        });
     };
     closeBrowser = async () => {
         if (!this.browserContext)
@@ -109,7 +131,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     };
     openPage = async () => {
         this.browserLaunchCheck();
-        const page = this.browserContext.newPage();
+        const page = await this.browserContext.newPage();
         return page;
     };
     browserLaunchCheck = () => {
