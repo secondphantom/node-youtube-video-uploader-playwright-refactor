@@ -7,14 +7,15 @@ const playwright_video_upload_1 = require("./playwright.video.upload");
 const common_method_1 = require("../common.method");
 class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     channelId;
+    userDataDir;
     youtubeLocale;
     pages;
     launchOptions;
     static instance;
-    static getInstance = ({ channelId, youtubeLocale, pages, launchOptions, }) => {
+    static getInstance = ({ channelId, userDataDir, youtubeLocale, pages, launchOptions, }) => {
         if (this.instance)
             return this.instance;
-        this.instance = new PlaywrightInstance(channelId, youtubeLocale, pages && pages.length > 0 ? pages : ["video", "comment"], launchOptions);
+        this.instance = new PlaywrightInstance(channelId, userDataDir, youtubeLocale, pages && pages.length > 0 ? pages : ["video", "comment"], launchOptions);
         return this.instance;
     };
     browserContext;
@@ -31,9 +32,10 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     get pageObj() {
         return this._pageObj;
     }
-    constructor(channelId, youtubeLocale, pages, launchOptions) {
+    constructor(channelId, userDataDir, youtubeLocale, pages, launchOptions) {
         super();
         this.channelId = channelId;
+        this.userDataDir = userDataDir;
         this.youtubeLocale = youtubeLocale;
         this.pages = pages;
         this.launchOptions = launchOptions;
@@ -58,22 +60,21 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         this.launchOptions = launchOptions;
     }
     goLoginPage = async () => {
-        await this.openBrowser();
+        await this.openBrowser(false);
         const page = await this.openPage();
         await this.goto(`https://studio.youtube.com/channel/UC${this.channelId}`, page);
         return page;
     };
-    getCookie = async () => {
-        this.browserLaunchCheck();
-        const cookies = await this.browserContext.cookies("https://www.youtube.com");
-        return cookies;
-    };
-    launch = async (dto) => {
+    launch = async () => {
         await this.closeBrowser();
-        const { cookies } = dto;
         await this.openBrowser();
-        await this.browserContext.addCookies(cookies);
-        await this.checkValidLogin();
+        try {
+            await this.checkValidLogin();
+        }
+        catch (error) {
+            await this.closeBrowser();
+            throw new Error(error.message);
+        }
         for (const pageKey in this._pageObj) {
             if (!this.pages.includes(pageKey))
                 continue;
@@ -109,17 +110,20 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         }
         const monkeyEle = await page.$("#monkey");
         if (monkeyEle !== null) {
-            throw new Error(`[ERROR] BrowserInstance: Cookies is not compatible. Please change cookies`);
+            throw new Error(`[ERROR] BrowserInstance: UserData is not compatible. Please change or update UserDate`);
         }
         await page.close();
     };
-    openBrowser = async () => {
+    openBrowser = async (headless) => {
         if (this.browserContext)
             return;
-        // const browser = await chromium.launch(this.launchOptions);
-        // this.browserContext = await browser.newContext();
-        this.browserContext = await playwright_1.chromium.launchPersistentContext("./exclude", {
+        this.browserContext = await playwright_1.chromium.launchPersistentContext(this.userDataDir, {
             ...this.launchOptions,
+            ...(headless === undefined
+                ? {}
+                : {
+                    headless,
+                }),
             userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         });
     };

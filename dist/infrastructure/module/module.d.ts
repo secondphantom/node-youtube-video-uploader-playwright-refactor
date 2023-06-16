@@ -1,7 +1,7 @@
 import { LaunchOptions } from "playwright";
 import { UploadVideoDto, VideoIdSchema } from "../../application/interfaces/browser.instance";
 export interface YoutubeUtilConfig {
-    cookiesFilePath: string;
+    userDataDir: string;
     channelId: string;
     youtubeLocale: string;
     pages?: ("video" | "comment")[];

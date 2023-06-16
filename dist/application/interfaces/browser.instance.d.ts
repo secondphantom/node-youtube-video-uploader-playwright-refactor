@@ -1,4 +1,4 @@
-import { Cookie, Page } from "playwright";
+import { Page } from "playwright";
 export interface UploadConfig {
     config?: {
         visibility?: "public" | "unlisted" | "private" | "schedule";
@@ -31,12 +31,8 @@ export type UploadVideoDto = VideoFileSchema & VideoMetaSchema & UploadConfig;
 export type DeleteVideoDto = VideoIdSchema;
 export type UpdateVideoDto = VideoMetaSchema & VideoIdSchema;
 export type WriteCommentDto = CommentSchema & VideoIdSchema;
-export type LaunchDto = {
-    cookies: Cookie[];
-};
 export declare abstract class BrowserInstance {
-    abstract launch: (dto: LaunchDto) => Promise<void>;
+    abstract launch: () => Promise<void>;
     abstract goLoginPage: () => Promise<Page>;
-    abstract getCookie: () => Promise<Cookie[]>;
     abstract uploadVideo: (dto: UploadVideoDto) => Promise<VideoIdSchema>;
 }

@@ -1,13 +1,6 @@
-import {
-  BrowserContext,
-  Cookie,
-  LaunchOptions,
-  Page,
-  chromium,
-} from "playwright";
+import { BrowserContext, LaunchOptions, Page, chromium } from "playwright";
 import {
   BrowserInstance,
-  LaunchDto,
   UploadVideoDto,
 } from "../../application/interfaces/browser.instance";
 import { PlaywrightUpload } from "./playwright.video.upload";
@@ -18,11 +11,13 @@ export class PlaywrightInstance extends BrowserInstance {
 
   static getInstance = ({
     channelId,
+    userDataDir,
     youtubeLocale,
     pages,
     launchOptions,
   }: {
     channelId: string;
+    userDataDir: string;
     youtubeLocale: string;
     pages?: ("video" | "comment")[];
     launchOptions?: LaunchOptions;
@@ -30,6 +25,7 @@ export class PlaywrightInstance extends BrowserInstance {
     if (this.instance) return this.instance;
     this.instance = new PlaywrightInstance(
       channelId,
+      userDataDir,
       youtubeLocale,
       pages && pages.length > 0 ? pages : ["video", "comment"],
       launchOptions
@@ -65,6 +61,7 @@ export class PlaywrightInstance extends BrowserInstance {
 
   constructor(
     private channelId: string,
+    private userDataDir: string,
     private youtubeLocale: string,
     private pages: ("video" | "comment")[],
     private launchOptions?: LaunchOptions
@@ -89,12 +86,11 @@ export class PlaywrightInstance extends BrowserInstance {
       ignoreDefaultArgs,
       args,
     };
-
     this.launchOptions = launchOptions;
   }
 
   goLoginPage = async () => {
-    await this.openBrowser();
+    await this.openBrowser(false);
     const page = await this.openPage();
     await this.goto(
       `https://studio.youtube.com/channel/UC${this.channelId}`,
@@ -102,19 +98,16 @@ export class PlaywrightInstance extends BrowserInstance {
     );
     return page;
   };
-  getCookie = async () => {
-    this.browserLaunchCheck();
-    const cookies = await this.browserContext!.cookies(
-      "https://www.youtube.com"
-    );
-    return cookies;
-  };
-  launch = async (dto: LaunchDto) => {
+
+  launch = async () => {
     await this.closeBrowser();
-    const { cookies } = dto;
     await this.openBrowser();
-    await this.browserContext!.addCookies(cookies);
-    await this.checkValidLogin();
+    try {
+      await this.checkValidLogin();
+    } catch (error: any) {
+      await this.closeBrowser();
+      throw new Error(error.message);
+    }
     for (const pageKey in this._pageObj) {
       if (!this.pages.includes(pageKey as any)) continue;
       const page = await this.browserContext!.newPage();
@@ -147,7 +140,7 @@ export class PlaywrightInstance extends BrowserInstance {
     await page.goto(url, { waitUntil: "load" });
   };
 
-  private checkValidLogin = async () => {
+  checkValidLogin = async () => {
     const page = await this.openPage();
     const url = `https://studio.youtube.com/channel/UC${this.channelId}`;
     await this.goto(url, page);
@@ -159,21 +152,28 @@ export class PlaywrightInstance extends BrowserInstance {
     const monkeyEle = await page.$("#monkey");
     if (monkeyEle !== null) {
       throw new Error(
-        `[ERROR] BrowserInstance: Cookies is not compatible. Please change cookies`
+        `[ERROR] BrowserInstance: UserData is not compatible. Please change or update UserDate`
       );
     }
     await page.close();
   };
 
-  private openBrowser = async () => {
+  private openBrowser = async (headless?: boolean) => {
     if (this.browserContext) return;
-    // const browser = await chromium.launch(this.launchOptions);
-    // this.browserContext = await browser.newContext();
-    this.browserContext = await chromium.launchPersistentContext("./exclude", {
-      ...this.launchOptions,
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-    });
+
+    this.browserContext = await chromium.launchPersistentContext(
+      this.userDataDir,
+      {
+        ...this.launchOptions,
+        ...(headless === undefined
+          ? {}
+          : {
+              headless,
+            }),
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+      }
+    );
   };
 
   private closeBrowser = async () => {

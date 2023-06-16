@@ -6,7 +6,7 @@ dotenv.config();
 describe("Module Test", () => {
   const youtubeUtil = new YoutubeUtil({
     channelId: process.env.CHANNEL_ID!,
-    cookiesFilePath: "./exclude/test-cookies.json",
+    userDataDir: process.env.USER_DATA_DIR_PATH!,
     youtubeLocale: "ko-KR",
     launchOptions: {
       headless: false,

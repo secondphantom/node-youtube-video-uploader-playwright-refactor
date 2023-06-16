@@ -12,6 +12,7 @@ describe("Playwright Browser Instance", () => {
     browserInstance = PlaywrightInstance.getInstance({
       channelId: process.env.CHANNEL_ID!,
       youtubeLocale: process.env.YOUTUBE_LOCALE!,
+      userDataDir: process.env.USER_DATA_DIR_PATH!,
       pages: ["video", "comment"],
       launchOptions: {
         headless: false,
@@ -24,7 +25,7 @@ describe("Playwright Browser Instance", () => {
     browserInstance["closeBrowser"]();
   }, 120000);
 
-  describe.skip("Login", () => {
+  describe.only("Login", () => {
     test("go to url", async () => {
       const url = "https://www.youtube.com";
       const page = await browserInstance["openPage"]();
@@ -35,21 +36,7 @@ describe("Playwright Browser Instance", () => {
 
       expect(pageUrl).toMatch("https://www.youtube.com");
     });
-    test("get cookies", async () => {
-      const cookies = await browserInstance.getCookie();
 
-      const cookieSchema = expect.objectContaining({
-        name: expect.any(String),
-        value: expect.any(String),
-        domain: expect.stringMatching(".youtube.com"),
-        path: expect.any(String),
-        expires: expect.any(Number),
-        httpOnly: expect.any(Boolean),
-        secure: expect.any(Boolean),
-        sameSite: expect.any(String),
-      });
-      expect(cookies[0]).toEqual(cookieSchema);
-    });
     test("Go Login Page", async () => {
       const page = await browserInstance.goLoginPage();
 
@@ -66,28 +53,11 @@ describe("Playwright Browser Instance", () => {
       }
       expect(error).toEqual(expect.anything());
     });
-    test.only("Launch", async () => {
-      const cookies = await fs.promises
-        .readFile("./exclude/test-cookies.json", {
-          encoding: "utf-8",
-        })
-        .then(JSON.parse);
-
-      await browserInstance.launch({ cookies });
-      await delay(120000);
-    }, 120000);
   });
 
-  describe.only("Video", () => {
+  describe.skip("Video", () => {
     test.only("Upload Video", async () => {
-      const cookies = (await fs.promises
-        .readFile(process.env.COOKIES_FILE_PATH!, {
-          encoding: "utf-8",
-        })
-        .then(JSON.parse)) as any;
-      await browserInstance.launch({
-        cookies,
-      });
+      await browserInstance.launch();
 
       const dto: UploadVideoDto = {
         meta: {

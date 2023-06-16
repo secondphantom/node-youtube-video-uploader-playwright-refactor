@@ -22,56 +22,37 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginService = void 0;
-const fs_1 = __importDefault(require("fs"));
 const process_1 = require("process");
 const readline = __importStar(require("readline/promises"));
-// export type LoginServiceDto = {
-//   cookiesFilePath: string;
-// };
 class LoginService {
     browserInstance;
-    cookiesFilePath;
     static instance;
-    static getInstance = (browserInstance, cookiesFilePath) => {
+    static getInstance = (browserInstance) => {
         if (this.instance)
             return this.instance;
-        this.instance = new LoginService(browserInstance, cookiesFilePath);
+        this.instance = new LoginService(browserInstance);
         return this.instance;
     };
     rl = readline.createInterface({ input: process_1.stdin, output: process_1.stdout });
-    constructor(browserInstance, cookiesFilePath) {
+    constructor(browserInstance) {
         this.browserInstance = browserInstance;
-        this.cookiesFilePath = cookiesFilePath;
     }
     login = async () => {
-        let cookies = this.getFileCookies(this.cookiesFilePath);
-        if (cookies === null) {
-            cookies = await this.getBrowserCookies(this.cookiesFilePath);
-        }
-        await this.browserInstance.launch({ cookies });
-        return { isLogin: true };
-    };
-    getFileCookies = (cookiesFilePath) => {
         try {
-            const cookies = JSON.parse(fs_1.default.readFileSync(cookiesFilePath, { encoding: "utf-8" }));
-            return cookies;
+            await this.browserInstance.launch();
         }
         catch (error) {
-            console.info("[ERROR]LOGIN SERVICE: get cookies by file");
-            return null;
+            console.log(error.message);
+            await this.updateUserDate();
+            await this.browserInstance.launch();
         }
+        return { isLogin: true };
     };
-    getBrowserCookies = async (cookiesFilePath) => {
+    updateUserDate = async () => {
         await this.browserInstance.goLoginPage();
         await this.rl.question("Login youtube channel. Did you login? (Enter)\n");
-        const cookies = await this.browserInstance.getCookie();
-        fs_1.default.writeFileSync(cookiesFilePath, JSON.stringify(cookies));
-        return cookies;
     };
 }
 exports.LoginService = LoginService;

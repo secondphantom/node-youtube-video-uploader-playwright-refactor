@@ -6,49 +6,26 @@ describe.only("Service Login", () => {
   let browserInstance: PlaywrightInstance;
   let loginService: LoginService;
   beforeAll(async () => {
-    browserInstance = PlaywrightInstance.getInstance(
-      process.env.CHANNEL_ID!,
-      process.env.YOUTUBE_LOCALE!,
-      {
-        headless: false,
-      }
-    );
-    loginService = LoginService.getInstance(
-      browserInstance,
-      process.env.COOKIES_FILE_PATH!
-    );
+    browserInstance = PlaywrightInstance.getInstance({
+      channelId: process.env.CHANNEL_ID!,
+      youtubeLocale: process.env.YOUTUBE_LOCALE!,
+      userDataDir: process.env.USER_DATA_DIR_PATH!,
+      pages: ["video", "comment"],
+      launchOptions: {
+        headless: true,
+      },
+    });
+    loginService = LoginService.getInstance(browserInstance);
   });
 
-  afterAll(async () => {}, 120000);
-
-  describe.skip("Get File Cookies", () => {
-    test.only("Success", () => {
-      const cookiesFilePath = "./exclude/test-cookies.json";
-
-      const cookies = loginService["getFileCookies"](cookiesFilePath);
-
-      expect(cookies).toEqual(expect.any(Array));
-    });
-    test("Fail", () => {
-      const cookiesFilePath = "./exclude/invalid-cookies.json";
-
-      const cookies = loginService["getFileCookies"](cookiesFilePath);
-      expect(cookies).toEqual(null);
-    });
-  });
-
-  test.skip("Get Browser Cookies", async () => {
-    const cookiesFilePath = "./exclude/test-cookies.json";
-
-    const cookies = await loginService["getBrowserCookies"](cookiesFilePath);
-
-    expect(cookies).toEqual(expect.anything());
+  afterAll(async () => {
+    browserInstance["closeBrowser"]();
   }, 120000);
 
   describe.only("Login", () => {
     test("Success", async () => {
-      const res = await loginService.login();
-      expect(res).toEqual(true);
+      const { isLogin } = await loginService.login();
+      expect(isLogin).toEqual(true);
     }, 120000);
   });
 });

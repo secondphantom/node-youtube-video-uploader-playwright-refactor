@@ -1,14 +1,12 @@
 import { BrowserInstance } from "../interfaces/browser.instance";
 export declare class LoginService {
     private browserInstance;
-    private cookiesFilePath;
     static instance: LoginService | undefined;
-    static getInstance: (browserInstance: BrowserInstance, cookiesFilePath: string) => LoginService;
+    static getInstance: (browserInstance: BrowserInstance) => LoginService;
     private rl;
-    constructor(browserInstance: BrowserInstance, cookiesFilePath: string);
+    constructor(browserInstance: BrowserInstance);
     login: () => Promise<{
         isLogin: boolean;
     }>;
-    private getFileCookies;
-    private getBrowserCookies;
+    private updateUserDate;
 }

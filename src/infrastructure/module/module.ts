@@ -16,7 +16,7 @@ import {
 } from "../../application/interfaces/browser.instance";
 
 export interface YoutubeUtilConfig {
-  cookiesFilePath: string;
+  userDataDir: string;
   channelId: string;
   youtubeLocale: string;
   pages?: ("video" | "comment")[];
@@ -29,16 +29,17 @@ export class YoutubeUtil {
   private browserInstance: PlaywrightInstance;
 
   constructor(config: YoutubeUtilConfig) {
-    const { cookiesFilePath, channelId, youtubeLocale, launchOptions, pages } =
+    const { channelId, userDataDir, youtubeLocale, launchOptions, pages } =
       config;
     this.browserInstance = PlaywrightInstance.getInstance({
       channelId,
+      userDataDir,
       youtubeLocale,
       pages,
       launchOptions,
     });
     this.LoginController = LoginController.getInstance(
-      LoginService.getInstance(this.browserInstance, cookiesFilePath)
+      LoginService.getInstance(this.browserInstance)
     );
     this.VideoController = VideoValidatorController.getInstance(
       VideoValidator.getInstance(),

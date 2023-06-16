@@ -1,13 +1,15 @@
-import { Cookie, LaunchOptions, Page } from "playwright";
-import { BrowserInstance, LaunchDto, UploadVideoDto } from "../../application/interfaces/browser.instance";
+import { LaunchOptions, Page } from "playwright";
+import { BrowserInstance, UploadVideoDto } from "../../application/interfaces/browser.instance";
 export declare class PlaywrightInstance extends BrowserInstance {
     private channelId;
+    private userDataDir;
     private youtubeLocale;
     private pages;
     private launchOptions?;
     static instance: PlaywrightInstance | undefined;
-    static getInstance: ({ channelId, youtubeLocale, pages, launchOptions, }: {
+    static getInstance: ({ channelId, userDataDir, youtubeLocale, pages, launchOptions, }: {
         channelId: string;
+        userDataDir: string;
         youtubeLocale: string;
         pages?: ("video" | "comment")[] | undefined;
         launchOptions?: LaunchOptions | undefined;
@@ -24,15 +26,14 @@ export declare class PlaywrightInstance extends BrowserInstance {
             isBusy: boolean;
         };
     };
-    constructor(channelId: string, youtubeLocale: string, pages: ("video" | "comment")[], launchOptions?: LaunchOptions | undefined);
+    constructor(channelId: string, userDataDir: string, youtubeLocale: string, pages: ("video" | "comment")[], launchOptions?: LaunchOptions | undefined);
     goLoginPage: () => Promise<Page>;
-    getCookie: () => Promise<Cookie[]>;
-    launch: (dto: LaunchDto) => Promise<void>;
+    launch: () => Promise<void>;
     uploadVideo: (dto: UploadVideoDto) => Promise<{
         videoId: string;
     }>;
     private goto;
-    private checkValidLogin;
+    checkValidLogin: () => Promise<void>;
     private openBrowser;
     private closeBrowser;
     private openPage;
