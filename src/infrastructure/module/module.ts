@@ -31,21 +31,19 @@ export class YoutubeUtil {
   constructor(config: YoutubeUtilConfig) {
     const { channelId, userDataDir, youtubeLocale, launchOptions, pages } =
       config;
-    this.browserInstance = PlaywrightInstance.getInstance({
+    this.browserInstance = new PlaywrightInstance(
       channelId,
       userDataDir,
       youtubeLocale,
-      pages,
-      launchOptions,
-    });
-    this.LoginController = LoginController.getInstance(
-      LoginService.getInstance(this.browserInstance)
+      pages && pages.length > 0 ? pages : ["video", "comment"],
+      launchOptions
     );
-    this.VideoController = VideoValidatorController.getInstance(
-      VideoValidator.getInstance(),
-      VideoController.getInstance(
-        VideoService.getInstance(this.browserInstance)
-      )
+    this.LoginController = new LoginController(
+      new LoginService(this.browserInstance)
+    );
+    this.VideoController = new VideoValidatorController(
+      new VideoValidator(),
+      new VideoController(new VideoService(this.browserInstance))
     );
   }
 
