@@ -379,5 +379,12 @@ export class PlaywrightUpload {
       maxTryCount: 5,
       throwError: false,
     });
+    await this.playwrightInstance.existClick({
+      page,
+      querySelector: ".ytcp-uploads-still-processing-dialog #close-button",
+      delayMs: 1000,
+      maxTryCount: 10,
+      throwError: false,
+    });
   };
 }
