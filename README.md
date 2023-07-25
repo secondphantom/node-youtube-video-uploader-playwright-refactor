@@ -1,81 +1,159 @@
 # youtube-video-uploader-playwright
 
-This library support uploading videos on youtube by playwright.
+This library support uploading videos on youtube by [playwright](https://playwright.dev/).
 
 - [youtube-video-uploader-playwright](#youtube-video-uploader-playwright)
 	- [Introduction](#introduction)
+	- [Feature](#feature)
+	- [Example](#example)
 	- [Usage](#usage)
 		- [New Class](#new-class)
-		- [Init Uploader](#init-uploader)
-		- [Upload Input](#upload-input)
-		- [Upload Video](#upload-video)
+		- [Login](#login)
+		- [Upload](#upload)
+			- [Video Input](#video-input)
+			- [Upload Video](#upload-video)
 
 ## Introduction
 The YouTube Data API default quota is 10000 points. And the upload video API consumes 1600 points. 
-The default quota was too small, so I considered uploading a video to a 'crawler'.
+The default quota was too small, so I considered uploading a video to a 'crawler ([playwright](https://playwright.dev/))'.
+## Feature
+*check is supported*
+- browser
+  - [x] headless
+- video
+  - [x] upload
+  - [ ] bulk upload
+  - [ ] update
+- comment
+  - [ ] create
+  - [ ] pin
+
+## Example
+***Please add .gitignore for 'userDataDir' path.***
+
+```ts
+const youtubeUtilConfig = {
+	userDataDir: "/userDataDir";
+	channelId: '_w_XCecvZ3GgxabnIz-w';
+	youtubeLocale: 'ko';
+	pages: ["video"];
+	launchOptions: {
+    headless: true,
+  },;
+}
+const youtubeUtil = new YoutubeUtil(youtubeUtilConfig)
+
+await youtubeUtil.login();
+
+const uploadVideoDto = {
+	meta: {
+		title: "title",
+		description: "description",
+		playlist: ["playlist", "playlist2"],
+		tags: ["tag1", "tag12"],
+	},
+	filePath: {
+		video: "./video.mp4",
+		thumbnail: "./thumbnail.jpg",
+	},
+	config: {
+		visibility: "schedule",
+		notifySubscribers: false,
+		schedule: new Date(),
+	},
+};
+await youtubeUtil.upload(uploadVideoDto);
+```
+
 ## Usage
-***Please add .gitignore for 'cookie' path.***
+***Please add .gitignore for 'userDataDir' path.***
 ### New Class
-- `launch options` headless false recommend
+- playwright [launch options](https://playwright.dev/docs/api/class-browsertype#browser-type-launch-persistent-context) headless `true` and `false` support
+
 ```ts
-const youtubeUploader = new YoutubeUploader(
-	// Input your channel id
-  'youtubeChannelId',
-	// Please add .gitignore for 'cookie' path.
-  '/path/cookies.json', 
-	// input your youtube locales for schedule
-	// default is 'en'
-  "ko",
-	// Playwright launch options 
-  {
-		// headless false recommend.
-    headless: false,
-  },
-	// isDev check
-  true
-);
+interface YoutubeUtilConfig {
+	// Please add .gitignore for 'userDataDir' path
+	userDataDir: string;
+	// example: _w_XCecvZ3GgxabnIz-w
+	channelId: string;
+	// for schedule date
+	youtubeLocale: string;
+	// browser tab
+	pages?: ("video" | "comment")[];
+	// playwright launch option 
+	// https://playwright.dev/docs/api/class-browsertype#browser-type-launch-persistent-context
+	// headless true support
+	launchOptions?: LaunchOptions;
+}
+
+const youtubeUtilConfig:YoutubeUtilConfig = {
+	userDataDir: "/userDataDir";
+	channelId: '_w_XCecvZ3GgxabnIz-w';
+	youtubeLocale: 'ko';
+	pages?: ["video"];
+	launchOptions?: {
+    headless: true,
+  },;
+}
+
+const youtubeUtil = new YoutubeUtil(youtubeUtilConfig)
 ```
 
-### Init Uploader
-- If you initialize the `YoutubeUploader` class for the first time, you should get JSON cookies for your YouTube channel.
-- When you first run the `init` method, the browser automatically opens for YouTube login. If you are logged in to a YouTube channel, type 'y' in `CLI`.
-```ts
-await youtubeUploader.init();
-```
-### Upload Input
-- `title` and `videoPath` are required. other is optional
-```ts
-const uploadInput: UploadVideoInput = {
-	title: "Title", 
-	videoPath: "video.mp4", 
-	/*
-	* below optional 
-	*/
-	description: `Description`,
-	tags: ["Tag1", "Tag2"],
-	thumbnailPath: "thumbnail.jpg",
-	/*
-	* You can enter either the 'visibility' option or the 'schedule' option.
-	*/
-	visibility: "private", // ""public" | "unlisted" | "private"
-	schedule: new Date(new Date().setMinutes(55)),
-	playlist: ["playlist1", "playlist2"],
-};
-// optional
-const uploadOptions: UploadVideoOptions = {
-	notifySubscribers: false,
-};
-```
-### Upload Video
-```ts
-// return video id 
-await youtubeUploader.uploadVideo(uploadInput, uploadOptions).then(console.log);
-// ["videoId","videoIds"]
+### Login
+- If you initialize the `YoutubeUploader` class for the first time, you should get `user data` for your YouTube channel.
+- When you first run the `login` method, the browser automatically opens for YouTube login. If you are logged in to a YouTube channel, type 'enter' in `CLI`.
 
-// return video ids and fail inputs
-await youtubeUploader.uploadBulkVideos([
-	{ input: uploadInput, options: uploadOptions }, // input_1
-	{ input: uploadInput, options: uploadOptions }, // input_2
-]).then(console.log);
-	// { videoIds: ["videoId"], failInputs: [input_2] }
+```ts
+await youtubeUploader.login();
+```
+
+### Upload
+#### Video Input
+
+```ts
+interface UploadVideoDto {
+  filePath: {
+    video: string;
+    thumbnail?: string;
+  };
+  meta: {
+    title: string;
+    description?: string;
+    tags?: string[];
+		// auto create playlist
+    playlist?: string[];
+  };
+  config?: {
+		// default are youtube channel upload setting
+    visibility?: "public" | "unlisted" | "private" | "schedule";
+		// if visibility is 'schedule", it work
+    schedule?: Date;
+		// default true 
+    notifySubscribers?: boolean;
+  };
+}
+
+const uploadVideoDto:UploadVideoDto = {
+	meta: {
+		title: "title",
+		description: "description",
+		playlist: ["playlist", "playlist2"],
+		tags: ["tag1", "tag12"],
+	},
+	filePath: {
+		video: "./video.mp4",
+		thumbnail: "./thumbnail.jpg",
+	},
+	config: {
+		visibility: "schedule",
+		notifySubscribers: false,
+		schedule: new Date(),
+	},
+};
+```
+
+#### Upload Video
+
+```ts
+const { videoId } = await youtubeUtil.upload(uploadVideoDto);
 ```
