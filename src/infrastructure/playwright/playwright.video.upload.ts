@@ -81,7 +81,7 @@ export class PlaywrightUpload {
     if (filePath.thumbnail !== undefined) {
       await this.playwrightInstance.fileChoose({
         page,
-        querySelector: "#add-photo-icon",
+        querySelector: "button#select-button",
         filePath: filePath.thumbnail,
       });
     }

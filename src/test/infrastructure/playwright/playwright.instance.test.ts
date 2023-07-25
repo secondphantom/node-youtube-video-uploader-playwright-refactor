@@ -13,7 +13,7 @@ describe("Playwright Browser Instance", () => {
       channelId: process.env.CHANNEL_ID!,
       youtubeLocale: process.env.YOUTUBE_LOCALE!,
       userDataDir: process.env.USER_DATA_DIR_PATH!,
-      pages: ["video", "comment"],
+      pages: ["video"],
       launchOptions: {
         headless: false,
       },
@@ -25,7 +25,7 @@ describe("Playwright Browser Instance", () => {
     browserInstance["closeBrowser"]();
   }, 120000);
 
-  describe.only("Login", () => {
+  describe.skip("Login", () => {
     test("go to url", async () => {
       const url = "https://www.youtube.com";
       const page = await browserInstance["openPage"]();
@@ -55,7 +55,7 @@ describe("Playwright Browser Instance", () => {
     });
   });
 
-  describe.skip("Video", () => {
+  describe.only("Video", () => {
     test.only("Upload Video", async () => {
       await browserInstance.launch();
 
@@ -81,7 +81,7 @@ describe("Playwright Browser Instance", () => {
 
       expect(videoId).toEqual(expect.any(String));
       // console.log(videoId);
-      // await delay(10000);
+      await delay(10000);
     }, 120000);
   });
 });
