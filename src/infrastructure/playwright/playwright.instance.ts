@@ -147,7 +147,9 @@ export class PlaywrightInstance extends BrowserInstance {
 
     const pageUrl = page.url();
     if (pageUrl !== url) {
-      throw new Error(`[ERROR] BrowserInstance: Login required`);
+      throw new Error(
+        `[ERROR] BrowserInstance: Login required ChannelId: ${this.channelId}`
+      );
     }
     const monkeyEle = await page.$("#monkey");
     if (monkeyEle !== null) {
