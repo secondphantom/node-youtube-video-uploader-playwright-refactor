@@ -15,7 +15,7 @@ describe("Playwright Browser Instance", () => {
       userDataDir: process.env.USER_DATA_DIR_PATH!,
       pages: ["video"],
       launchOptions: {
-        headless: false,
+        headless: true,
       },
     });
     await browserInstance["openBrowser"]();
@@ -63,7 +63,12 @@ describe("Playwright Browser Instance", () => {
         meta: {
           title: "테스트",
           description: "테스트 설명",
-          // playlist: ["테스티", "추가"],
+          playlist: [
+            "2023 K-Pop for Random Dance",
+            "2023 K-Pop",
+            "2023 K-Pop Girl",
+            "NewJeans",
+          ],
           tags: ["테그1", "테그2"],
         },
         filePath: {
@@ -71,9 +76,9 @@ describe("Playwright Browser Instance", () => {
           thumbnail: "./thumbnail.jpg",
         },
         config: {
-          visibility: "schedule",
+          visibility: "private",
           notifySubscribers: false,
-          schedule: new Date(new Date().setHours(new Date().getHours() + 1)),
+          // schedule: new Date(new Date().setHours(new Date().getHours() + 1)),
         },
       };
 
