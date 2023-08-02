@@ -13,8 +13,12 @@ class YoutubeUtil {
     VideoController;
     browserInstance;
     constructor(config) {
-        const { channelId, userDataDir, youtubeLocale, launchOptions, pages } = config;
-        this.browserInstance = new playwright_instance_1.PlaywrightInstance(channelId, userDataDir, youtubeLocale, pages && pages.length > 0 ? pages : ["video", "comment"], launchOptions);
+        const { launchOptions, pages } = config;
+        this.browserInstance = new playwright_instance_1.PlaywrightInstance({
+            ...config,
+            pages: pages && pages.length > 0 ? pages : ["video", "comment"],
+            launchOptions: launchOptions ? launchOptions : {},
+        });
         this.LoginController = new login_controller_1.LoginController(new login_service_1.LoginService(this.browserInstance));
         this.VideoController = new video_validator_1.VideoValidatorController(new video_validator_2.VideoValidator(), new video_controller_1.VideoController(new video_service_1.VideoService(this.browserInstance)));
     }

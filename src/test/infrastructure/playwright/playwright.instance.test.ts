@@ -12,7 +12,7 @@ describe("Playwright Browser Instance", () => {
     browserInstance = PlaywrightInstance.getInstance({
       channelId: process.env.CHANNEL_ID!,
       youtubeLocale: process.env.YOUTUBE_LOCALE!,
-      userDataDir: process.env.USER_DATA_DIR_PATH!,
+      cookieFilePath: process.env.COOKIE_FILE_PATH!,
       pages: ["video"],
       launchOptions: {
         headless: true,
@@ -37,12 +37,13 @@ describe("Playwright Browser Instance", () => {
       expect(pageUrl).toMatch("https://www.youtube.com");
     });
 
-    test("Go Login Page", async () => {
+    test.only("Go Login Page", async () => {
       const page = await browserInstance.goLoginPage();
 
       const pageUrl = page.url();
 
       expect(pageUrl).toContain("https://accounts.google.com/v3/signin");
+      await delay(10000);
     });
     test("Check Valid Login", async () => {
       let error;

@@ -22,14 +22,15 @@ export class LoginService {
       await this.browserInstance.launch();
     } catch (error: any) {
       console.log(error.message);
-      await this.updateUserDate();
+      await this.updateAuth();
       await this.browserInstance.launch();
     }
     return { isLogin: true };
   };
 
-  private updateUserDate = async () => {
+  private updateAuth = async () => {
     await this.browserInstance.goLoginPage();
     await this.rl.question("Login youtube channel. Did you login? (Enter)\n");
+    await this.browserInstance.saveCookie();
   };
 }

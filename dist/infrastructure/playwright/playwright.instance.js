@@ -1,21 +1,25 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlaywrightInstance = void 0;
 const playwright_1 = require("playwright");
 const browser_instance_1 = require("../../application/interfaces/browser.instance");
 const playwright_video_upload_1 = require("./playwright.video.upload");
 const common_method_1 = require("../common.method");
+const fs_1 = __importDefault(require("fs"));
 class PlaywrightInstance extends browser_instance_1.BrowserInstance {
-    channelId;
-    userDataDir;
-    youtubeLocale;
-    pages;
-    launchOptions;
     static instance;
-    static getInstance = ({ channelId, userDataDir, youtubeLocale, pages, launchOptions, }) => {
+    static getInstance = (instanceInput) => {
         if (this.instance)
             return this.instance;
-        this.instance = new PlaywrightInstance(channelId, userDataDir, youtubeLocale, pages && pages.length > 0 ? pages : ["video", "comment"], launchOptions);
+        const { pages, launchOptions } = instanceInput;
+        this.instance = new PlaywrightInstance({
+            ...instanceInput,
+            pages: pages && pages.length > 0 ? pages : ["video", "comment"],
+            launchOptions: launchOptions ? launchOptions : {},
+        });
         return this.instance;
     };
     browserContext;
@@ -32,10 +36,15 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     get pageObj() {
         return this._pageObj;
     }
-    constructor(channelId, userDataDir, youtubeLocale, pages, launchOptions) {
+    channelId;
+    cookieFilePath;
+    youtubeLocale;
+    pages = [];
+    launchOptions;
+    constructor({ channelId, cookieFilePath, youtubeLocale, pages, launchOptions, }) {
         super();
         this.channelId = channelId;
-        this.userDataDir = userDataDir;
+        this.cookieFilePath = cookieFilePath;
         this.youtubeLocale = youtubeLocale;
         this.pages = pages;
         this.launchOptions = launchOptions;
@@ -69,6 +78,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         await this.closeBrowser();
         await this.openBrowser();
         try {
+            await this.setCookie();
             await this.checkValidLogin();
         }
         catch (error) {
@@ -117,15 +127,30 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     openBrowser = async (headless) => {
         if (this.browserContext)
             return;
-        this.browserContext = await playwright_1.chromium.launchPersistentContext(this.userDataDir, {
+        const browser = await playwright_1.chromium.launch({
             ...this.launchOptions,
             ...(headless === undefined
                 ? {}
                 : {
                     headless,
                 }),
+        });
+        this.browserContext = await browser.newContext({
             userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         });
+        // this.browserContext = await chromium.launchPersistentContext(
+        //   this.userDataDir,
+        //   {
+        //     ...this.launchOptions,
+        //     ...(headless === undefined
+        //       ? {}
+        //       : {
+        //           headless,
+        //         }),
+        //     userAgent:
+        //       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        //   }
+        // );
     };
     closeBrowser = async () => {
         if (!this.browserContext)
@@ -142,6 +167,23 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         if (!this.browserContext) {
             throw new Error(`[ERROR] Browser Instance: Browser Not Launched`);
         }
+    };
+    setCookie = async () => {
+        this.browserLaunchCheck();
+        try {
+            const cookies = await fs_1.default.promises
+                .readFile(this.cookieFilePath, { encoding: "utf-8" })
+                .then(JSON.parse);
+            this.browserContext.addCookies(cookies);
+        }
+        catch (error) {
+            throw new Error(`[ERROR] Cannot Set Cookies`);
+        }
+    };
+    saveCookie = async () => {
+        this.browserLaunchCheck();
+        const cookies = await this.browserContext.cookies("https://www.youtube.com");
+        await fs_1.default.promises.writeFile(this.cookieFilePath, JSON.stringify(cookies));
     };
     existFill = async ({ page, querySelector, inputStr, delayMs, maxTryCount, }) => {
         if (delayMs === undefined)

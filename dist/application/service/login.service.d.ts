@@ -8,5 +8,5 @@ export declare class LoginService {
     login: () => Promise<{
         isLogin: boolean;
     }>;
-    private updateUserDate;
+    private updateAuth;
 }

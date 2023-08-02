@@ -1,12 +1,5 @@
-import { LaunchOptions } from "playwright";
-import { UploadVideoDto, VideoIdSchema } from "../../application/interfaces/browser.instance";
-export interface YoutubeUtilConfig {
-    userDataDir: string;
-    channelId: string;
-    youtubeLocale: string;
-    pages?: ("video" | "comment")[];
-    launchOptions?: LaunchOptions;
-}
+import { GetInstanceInput, UploadVideoDto, VideoIdSchema } from "../../application/interfaces/browser.instance";
+export type YoutubeUtilConfig = GetInstanceInput;
 export declare class YoutubeUtil {
     private LoginController;
     private VideoController;

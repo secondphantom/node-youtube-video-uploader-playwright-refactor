@@ -1,19 +1,8 @@
-import { LaunchOptions, Page } from "playwright";
-import { BrowserInstance, UploadVideoDto } from "../../application/interfaces/browser.instance";
+import { Page } from "playwright";
+import { BrowserInstance, GetInstanceInput, UploadVideoDto } from "../../application/interfaces/browser.instance";
 export declare class PlaywrightInstance extends BrowserInstance {
-    private channelId;
-    private userDataDir;
-    private youtubeLocale;
-    private pages;
-    private launchOptions?;
     static instance: PlaywrightInstance | undefined;
-    static getInstance: ({ channelId, userDataDir, youtubeLocale, pages, launchOptions, }: {
-        channelId: string;
-        userDataDir: string;
-        youtubeLocale: string;
-        pages?: ("video" | "comment")[] | undefined;
-        launchOptions?: LaunchOptions | undefined;
-    }) => PlaywrightInstance;
+    static getInstance: (instanceInput: GetInstanceInput) => PlaywrightInstance;
     private browserContext;
     private _pageObj;
     get pageObj(): {
@@ -26,7 +15,12 @@ export declare class PlaywrightInstance extends BrowserInstance {
             isBusy: boolean;
         };
     };
-    constructor(channelId: string, userDataDir: string, youtubeLocale: string, pages: ("video" | "comment")[], launchOptions?: LaunchOptions | undefined);
+    private channelId;
+    private cookieFilePath;
+    private youtubeLocale;
+    private pages;
+    private launchOptions;
+    constructor({ channelId, cookieFilePath, youtubeLocale, pages, launchOptions, }: Required<GetInstanceInput>);
     goLoginPage: () => Promise<Page>;
     launch: () => Promise<void>;
     uploadVideo: (dto: UploadVideoDto) => Promise<{
@@ -38,6 +32,8 @@ export declare class PlaywrightInstance extends BrowserInstance {
     private closeBrowser;
     private openPage;
     private browserLaunchCheck;
+    private setCookie;
+    saveCookie: () => Promise<void>;
     existFill: ({ page, querySelector, inputStr, delayMs, maxTryCount, }: {
         page: Page;
         querySelector: string;

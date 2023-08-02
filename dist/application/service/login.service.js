@@ -45,14 +45,15 @@ class LoginService {
         }
         catch (error) {
             console.log(error.message);
-            await this.updateUserDate();
+            await this.updateAuth();
             await this.browserInstance.launch();
         }
         return { isLogin: true };
     };
-    updateUserDate = async () => {
+    updateAuth = async () => {
         await this.browserInstance.goLoginPage();
         await this.rl.question("Login youtube channel. Did you login? (Enter)\n");
+        await this.browserInstance.saveCookie();
     };
 }
 exports.LoginService = LoginService;

@@ -6,10 +6,10 @@ dotenv.config();
 describe("Module Test", () => {
   const youtubeUtil = new YoutubeUtil({
     channelId: process.env.CHANNEL_ID!,
-    userDataDir: process.env.USER_DATA_DIR_PATH!,
+    cookieFilePath: process.env.COOKIE_FILE_PATH!,
     youtubeLocale: "ko-KR",
     launchOptions: {
-      headless: false,
+      headless: true,
     },
   });
 
@@ -22,6 +22,7 @@ describe("Module Test", () => {
 
   describe("Video", () => {
     test("Upload Video", async () => {
+      await youtubeUtil.login();
       const { videoId } = await youtubeUtil.uploadVideo({
         meta: {
           title: "테스트",

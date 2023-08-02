@@ -10,34 +10,25 @@ import { VideoValidator } from "../validator/video.validator";
 import { VideoController } from "../../controller/video/video.controller";
 import { ResponseDto } from "../../application/dto/response.dto";
 import {
+  GetInstanceInput,
   UpdateVideoDto,
   UploadVideoDto,
   VideoIdSchema,
 } from "../../application/interfaces/browser.instance";
 
-export interface YoutubeUtilConfig {
-  userDataDir: string;
-  channelId: string;
-  youtubeLocale: string;
-  pages?: ("video" | "comment")[];
-  launchOptions?: LaunchOptions;
-}
-
+export type YoutubeUtilConfig = GetInstanceInput;
 export class YoutubeUtil {
   private LoginController;
   private VideoController;
   private browserInstance: PlaywrightInstance;
 
   constructor(config: YoutubeUtilConfig) {
-    const { channelId, userDataDir, youtubeLocale, launchOptions, pages } =
-      config;
-    this.browserInstance = new PlaywrightInstance(
-      channelId,
-      userDataDir,
-      youtubeLocale,
-      pages && pages.length > 0 ? pages : ["video", "comment"],
-      launchOptions
-    );
+    const { launchOptions, pages } = config;
+    this.browserInstance = new PlaywrightInstance({
+      ...config,
+      pages: pages && pages.length > 0 ? pages : ["video", "comment"],
+      launchOptions: launchOptions ? launchOptions : {},
+    });
     this.LoginController = new LoginController(
       new LoginService(this.browserInstance)
     );
