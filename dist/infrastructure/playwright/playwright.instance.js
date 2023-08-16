@@ -36,14 +36,14 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     get pageObj() {
         return this._pageObj;
     }
-    channelId;
+    _channelId;
     cookieFilePath;
     youtubeLocale;
     pages = [];
     launchOptions;
     constructor({ channelId, cookieFilePath, youtubeLocale, pages, launchOptions, }) {
         super();
-        this.channelId = channelId;
+        this._channelId = channelId;
         this.cookieFilePath = cookieFilePath;
         this.youtubeLocale = youtubeLocale;
         this.pages = pages;
@@ -67,6 +67,9 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
             args,
         };
         this.launchOptions = launchOptions;
+    }
+    get channelId() {
+        return this._channelId;
     }
     goLoginPage = async () => {
         await this.openBrowser(false);
@@ -138,19 +141,6 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         this.browserContext = await browser.newContext({
             userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         });
-        // this.browserContext = await chromium.launchPersistentContext(
-        //   this.userDataDir,
-        //   {
-        //     ...this.launchOptions,
-        //     ...(headless === undefined
-        //       ? {}
-        //       : {
-        //           headless,
-        //         }),
-        //     userAgent:
-        //       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-        //   }
-        // );
     };
     closeBrowser = async () => {
         if (!this.browserContext)
@@ -162,6 +152,14 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         this.browserLaunchCheck();
         const page = await this.browserContext.newPage();
         return page;
+    };
+    reloadPage = async (dto) => {
+        const { page } = dto;
+        if (!this._pageObj[page].page) {
+            console.log(`[INFO] Browser Instance: ${page} not launched`);
+            return;
+        }
+        await this._pageObj[page].page.reload({ waitUntil: "networkidle" });
     };
     browserLaunchCheck = () => {
         if (!this.browserContext) {

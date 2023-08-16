@@ -11,15 +11,19 @@ import { VideoController } from "../../controller/video/video.controller";
 import { ResponseDto } from "../../application/dto/response.dto";
 import {
   GetInstanceInput,
+  ReloadPageDto,
   UpdateVideoDto,
   UploadVideoDto,
   VideoIdSchema,
 } from "../../application/interfaces/browser.instance";
+import { BrowserController } from "../../controller/browser/browser.controller";
+import { BrowserService } from "../../application/service/browser.service";
 
 export type YoutubeUtilConfig = GetInstanceInput;
 export class YoutubeUtil {
-  private LoginController;
-  private VideoController;
+  private loginController;
+  private videoController;
+  private browserController;
   private browserInstance: PlaywrightInstance;
 
   constructor(config: YoutubeUtilConfig) {
@@ -29,22 +33,30 @@ export class YoutubeUtil {
       pages: pages && pages.length > 0 ? pages : ["video", "comment"],
       launchOptions: launchOptions ? launchOptions : {},
     });
-    this.LoginController = new LoginController(
+    this.loginController = new LoginController(
       new LoginService(this.browserInstance)
     );
-    this.VideoController = new VideoValidatorController(
+    this.videoController = new VideoValidatorController(
       new VideoValidator(),
       new VideoController(new VideoService(this.browserInstance))
+    );
+    this.browserController = new BrowserController(
+      new BrowserService(this.browserInstance)
     );
   }
 
   login = async () => {
-    const result = await this.LoginController.login();
+    const result = await this.loginController.login();
+    return this.responseResolver<{ isLogin: boolean }>(result);
+  };
+
+  reloadPage = async (dto: ReloadPageDto) => {
+    const result = await this.browserController.reloadPage(dto);
     return this.responseResolver<{ isLogin: boolean }>(result);
   };
 
   uploadVideo = async (dto: UploadVideoDto) => {
-    const result = await this.VideoController.uploadVideo(dto);
+    const result = await this.videoController.uploadVideo(dto);
     return this.responseResolver<VideoIdSchema>(result);
   };
 

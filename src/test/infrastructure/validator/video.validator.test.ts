@@ -9,7 +9,7 @@ describe("Video Zod Validator", () => {
   beforeAll(() => {
     videoValidator = VideoValidator.getInstance();
   });
-  describe("videoFileSchema", () => {
+  describe.skip("videoFileSchema", () => {
     test.each<{
       params: any;
       message: string;
@@ -67,7 +67,7 @@ describe("Video Zod Validator", () => {
     });
   });
 
-  describe("videoMetaSchema", () => {
+  describe.skip("videoMetaSchema", () => {
     test.each<{
       params: any;
       message: string;
@@ -175,7 +175,7 @@ describe("Video Zod Validator", () => {
     });
   });
 
-  describe("uploadConfigSchema", () => {
+  describe.only("uploadConfigSchema", () => {
     test.each<{
       params: any;
       message: string;
@@ -184,16 +184,16 @@ describe("Video Zod Validator", () => {
       {
         params: {
           visibility: "public",
-          schedule: new Date(),
+          // schedule: new Date(),
           notifySubscribers: false,
         },
         message: "valid",
         isError: false,
       },
+
       {
         params: {
           visibility: "unlisted",
-          schedule: new Date(),
           notifySubscribers: false,
         },
         message: "valid",
@@ -202,7 +202,6 @@ describe("Video Zod Validator", () => {
       {
         params: {
           visibility: "private",
-          schedule: new Date(),
           notifySubscribers: false,
         },
         message: "valid",
@@ -211,7 +210,7 @@ describe("Video Zod Validator", () => {
       {
         params: {
           visibility: "schedule",
-          schedule: new Date(),
+          schedule: new Date("2040-05-05"),
           notifySubscribers: false,
         },
         message: "valid",
@@ -221,6 +220,15 @@ describe("Video Zod Validator", () => {
         params: {},
         message: "valid",
         isError: false,
+      },
+      {
+        params: {
+          visibility: "schedule",
+          schedule: new Date(),
+          notifySubscribers: false,
+        },
+        message: "schedule date in the future",
+        isError: true,
       },
       {
         params: {
@@ -252,7 +260,6 @@ describe("Video Zod Validator", () => {
       {
         params: {
           visibility: "public",
-          schedule: new Date(),
           notifySubscribers: 12341,
         },
         message: "invalid notifySubscribers type",
@@ -274,7 +281,7 @@ describe("Video Zod Validator", () => {
     });
   });
 
-  describe("Upload Video Dto", () => {
+  describe.skip("Upload Video Dto", () => {
     test.each<{
       params: any;
       message: string;

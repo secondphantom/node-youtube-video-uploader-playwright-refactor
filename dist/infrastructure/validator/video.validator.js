@@ -34,7 +34,19 @@ class VideoValidator {
             zod_1.default.literal("schedule"),
         ])
             .optional(),
-        schedule: zod_1.default.date().optional(),
+        schedule: zod_1.default
+            .date()
+            .transform((val, ctx) => {
+            if (val.getTime() < new Date().getTime()) {
+                ctx.addIssue({
+                    code: zod_1.default.ZodIssueCode.custom,
+                    message: "Need schedule date in the future",
+                });
+                return zod_1.default.NEVER;
+            }
+            return val;
+        })
+            .optional(),
         notifySubscribers: zod_1.default.boolean().optional(),
     })
         .optional();

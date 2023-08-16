@@ -52,7 +52,8 @@ class LoginService {
     };
     updateAuth = async () => {
         await this.browserInstance.goLoginPage();
-        await this.rl.question("Login youtube channel. Did you login? (Enter)\n");
+        const channelId = this.browserInstance.channelId;
+        await this.rl.question(`Login youtube channelId: ${channelId}. Did you login? (Enter)\n`);
         await this.browserInstance.saveCookie();
     };
 }

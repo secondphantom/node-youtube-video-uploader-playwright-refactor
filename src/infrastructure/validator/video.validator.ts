@@ -34,7 +34,19 @@ export class VideoValidator implements VideoValidatorInterface {
           z.literal("schedule"),
         ])
         .optional(),
-      schedule: z.date().optional(),
+      schedule: z
+        .date()
+        .transform((val, ctx) => {
+          if (val.getTime() < new Date().getTime()) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Need schedule date in the future",
+            });
+            return z.NEVER;
+          }
+          return val;
+        })
+        .optional(),
       notifySubscribers: z.boolean().optional(),
     })
     .optional();
