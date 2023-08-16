@@ -52,6 +52,9 @@ export type ReloadPageDto = {
 };
 
 export abstract class BrowserInstance {
+  get channelId(): string {
+    return this.channelId;
+  }
   abstract launch: () => Promise<void>;
   abstract reloadPage: (dto: ReloadPageDto) => Promise<void>;
   abstract saveCookie: () => Promise<void>;

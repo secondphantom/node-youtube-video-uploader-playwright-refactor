@@ -2,6 +2,7 @@ import { PlaywrightInstance } from "../../../infrastructure/playwright/playwrigh
 import { LoginService } from "../../../application/service/login.service";
 import dotenv from "dotenv";
 dotenv.config();
+
 describe.only("Service Login", () => {
   let browserInstance: PlaywrightInstance;
   let loginService: LoginService;

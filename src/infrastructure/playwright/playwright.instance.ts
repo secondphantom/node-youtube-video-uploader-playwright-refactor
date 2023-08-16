@@ -49,7 +49,7 @@ export class PlaywrightInstance extends BrowserInstance {
     return this._pageObj;
   }
 
-  private channelId: string;
+  private _channelId: string;
   private cookieFilePath: string;
   private youtubeLocale: string;
   private pages: ("video" | "comment")[] = [];
@@ -63,7 +63,7 @@ export class PlaywrightInstance extends BrowserInstance {
   }: Required<GetInstanceInput>) {
     super();
 
-    this.channelId = channelId;
+    this._channelId = channelId;
     this.cookieFilePath = cookieFilePath;
     this.youtubeLocale = youtubeLocale;
     this.pages = pages;
@@ -87,6 +87,10 @@ export class PlaywrightInstance extends BrowserInstance {
       args,
     };
     this.launchOptions = launchOptions;
+  }
+
+  get channelId() {
+    return this._channelId;
   }
 
   goLoginPage = async () => {

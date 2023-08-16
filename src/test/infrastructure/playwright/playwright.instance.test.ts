@@ -25,8 +25,8 @@ describe("Playwright Browser Instance", () => {
     browserInstance["closeBrowser"]();
   }, 120000);
 
-  describe.skip("Login", () => {
-    test("go to url", async () => {
+  describe.only("Login", () => {
+    test.skip("go to url", async () => {
       const url = "https://www.youtube.com";
       const page = await browserInstance["openPage"]();
 
@@ -37,7 +37,7 @@ describe("Playwright Browser Instance", () => {
       expect(pageUrl).toMatch("https://www.youtube.com");
     });
 
-    test.only("Go Login Page", async () => {
+    test.skip("Go Login Page", async () => {
       const page = await browserInstance.goLoginPage();
 
       const pageUrl = page.url();
@@ -45,7 +45,8 @@ describe("Playwright Browser Instance", () => {
       expect(pageUrl).toContain("https://accounts.google.com/v3/signin");
       await delay(10000);
     });
-    test("Check Valid Login", async () => {
+
+    test.skip("Check Valid Login", async () => {
       let error;
       try {
         await browserInstance["checkValidLogin"]();
@@ -54,9 +55,14 @@ describe("Playwright Browser Instance", () => {
       }
       expect(error).toEqual(expect.anything());
     });
+
+    test.only("Get Channel Id", async () => {
+      const channelId = browserInstance.channelId;
+      expect(channelId).toEqual(process.env.CHANNEL_ID!);
+    });
   });
 
-  describe.only("page", () => {
+  describe.skip("page", () => {
     test("reload", async () => {
       const url = "https://maki-chan.de/preventclose.htm";
       const page = await browserInstance["openPage"]();
