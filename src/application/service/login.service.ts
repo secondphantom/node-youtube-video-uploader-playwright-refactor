@@ -1,8 +1,6 @@
 import { BrowserInstance } from "../interfaces/browser.instance";
-import fs from "fs";
 import { stdin as input, stdout as output } from "process";
 import * as readline from "readline/promises";
-import { ResponseDto } from "../dto/response.dto";
 
 export class LoginService {
   static instance: LoginService | undefined;
