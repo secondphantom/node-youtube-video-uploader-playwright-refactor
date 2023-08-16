@@ -2,6 +2,7 @@ import { BrowserContext, LaunchOptions, Page, chromium } from "playwright";
 import {
   BrowserInstance,
   GetInstanceInput,
+  ReloadPageDto,
   UploadVideoDto,
 } from "../../application/interfaces/browser.instance";
 import { PlaywrightUpload } from "./playwright.video.upload";
@@ -42,7 +43,7 @@ export class PlaywrightInstance extends BrowserInstance {
       page: undefined,
       isBusy: false,
     },
-  };
+  } as const;
 
   get pageObj() {
     return this._pageObj;
@@ -176,19 +177,6 @@ export class PlaywrightInstance extends BrowserInstance {
       userAgent:
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
     });
-    // this.browserContext = await chromium.launchPersistentContext(
-    //   this.userDataDir,
-    //   {
-    //     ...this.launchOptions,
-    //     ...(headless === undefined
-    //       ? {}
-    //       : {
-    //           headless,
-    //         }),
-    //     userAgent:
-    //       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-    //   }
-    // );
   };
 
   private closeBrowser = async () => {
@@ -201,6 +189,15 @@ export class PlaywrightInstance extends BrowserInstance {
     this.browserLaunchCheck();
     const page = await this.browserContext!.newPage();
     return page;
+  };
+
+  reloadPage = async (dto: ReloadPageDto) => {
+    const { page } = dto;
+    if (!this._pageObj[page].page) {
+      console.log(`[INFO] Browser Instance: ${page} not launched`);
+      return;
+    }
+    await this._pageObj[page].page!.reload({ waitUntil: "networkidle" });
   };
 
   private browserLaunchCheck = () => {

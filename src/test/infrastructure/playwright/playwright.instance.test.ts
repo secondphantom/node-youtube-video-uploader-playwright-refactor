@@ -15,7 +15,7 @@ describe("Playwright Browser Instance", () => {
       cookieFilePath: process.env.COOKIE_FILE_PATH!,
       pages: ["video"],
       launchOptions: {
-        headless: true,
+        headless: false,
       },
     });
     await browserInstance["openBrowser"]();
@@ -56,7 +56,24 @@ describe("Playwright Browser Instance", () => {
     });
   });
 
-  describe.only("Video", () => {
+  describe.only("page", () => {
+    test("reload", async () => {
+      const url = "https://maki-chan.de/preventclose.htm";
+      const page = await browserInstance["openPage"]();
+      browserInstance.pageObj.video.page = page;
+      await browserInstance["goto"](url, page);
+      await browserInstance["existClick"]({
+        page,
+        querySelector: "a",
+      });
+      await delay(2000);
+      await browserInstance.reloadPage({ page: "video" });
+      const pageUrl = page.url();
+      expect(pageUrl).toContain("https://maki-chan.de/preventclose.htm");
+    });
+  });
+
+  describe.skip("Video", () => {
     test.only("Upload Video", async () => {
       await browserInstance.launch();
 
