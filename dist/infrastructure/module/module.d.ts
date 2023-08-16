@@ -10,7 +10,7 @@ export declare class YoutubeUtil {
         isLogin: boolean;
     }>;
     reloadPage: (dto: ReloadPageDto) => Promise<{
-        isLogin: boolean;
+        message: string;
     }>;
     uploadVideo: (dto: UploadVideoDto) => Promise<VideoIdSchema>;
     get pageObj(): {

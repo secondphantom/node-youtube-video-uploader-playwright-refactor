@@ -7,7 +7,7 @@ export declare class BrowserController implements BrowserControllerInterface {
     static instance: BrowserController | undefined;
     static getInstance: (browserService: BrowserService) => BrowserController;
     constructor(browserService: BrowserService);
-    reloadPage: (dto: ReloadPageDto) => Promise<ResponseDto<void> | ResponseDto<{
+    reloadPage: (dto: ReloadPageDto) => Promise<ResponseDto<{
         message: any;
     }>>;
 }

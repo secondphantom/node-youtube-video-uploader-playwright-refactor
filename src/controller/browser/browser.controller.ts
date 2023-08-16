@@ -16,11 +16,13 @@ export class BrowserController implements BrowserControllerInterface {
 
   reloadPage = async (dto: ReloadPageDto) => {
     try {
-      const result = await this.browserService.reloadPage(dto);
+      await this.browserService.reloadPage(dto);
       return new ResponseDto({
         payload: {
           success: true,
-          data: result,
+          data: {
+            message: "Browser Controller: Success reload page",
+          },
         },
       });
     } catch (error: any) {

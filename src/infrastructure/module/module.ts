@@ -52,7 +52,7 @@ export class YoutubeUtil {
 
   reloadPage = async (dto: ReloadPageDto) => {
     const result = await this.browserController.reloadPage(dto);
-    return this.responseResolver<{ isLogin: boolean }>(result);
+    return this.responseResolver<{ message: string }>(result);
   };
 
   uploadVideo = async (dto: UploadVideoDto) => {

@@ -16,11 +16,13 @@ class BrowserController {
     }
     reloadPage = async (dto) => {
         try {
-            const result = await this.browserService.reloadPage(dto);
+            await this.browserService.reloadPage(dto);
             return new response_dto_1.ResponseDto({
                 payload: {
                     success: true,
-                    data: result,
+                    data: {
+                        message: "Browser Controller: Success reload page",
+                    },
                 },
             });
         }
