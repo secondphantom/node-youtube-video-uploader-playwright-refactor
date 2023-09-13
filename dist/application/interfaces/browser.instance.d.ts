@@ -2,7 +2,7 @@ import { LaunchOptions, Page } from "playwright";
 export type PageType = "video" | "comment";
 export interface GetInstanceInput {
     channelId: string;
-    cookieFilePath: string;
+    authFilePath: string;
     youtubeLocale: string;
     pages?: PageType[];
     launchOptions?: LaunchOptions;
@@ -46,7 +46,7 @@ export declare abstract class BrowserInstance {
     get channelId(): string;
     abstract launch: () => Promise<void>;
     abstract reloadPage: (dto: ReloadPageDto) => Promise<void>;
-    abstract saveCookie: () => Promise<void>;
+    abstract saveAuthFile: () => Promise<void>;
     abstract goLoginPage: () => Promise<Page>;
     abstract uploadVideo: (dto: UploadVideoDto) => Promise<VideoIdSchema>;
 }

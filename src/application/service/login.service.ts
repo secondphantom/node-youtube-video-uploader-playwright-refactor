@@ -30,8 +30,8 @@ export class LoginService {
     await this.browserInstance.goLoginPage();
     const channelId = this.browserInstance.channelId;
     await this.rl.question(
-      `Login youtube channelId: ${channelId}. Did you login? (Enter)\n`
+      `Login youtube channelId: ${channelId}.\nChannelUrl : https://www.youtube.com/channel/${channelId}\nDid you login? (Enter)\n`
     );
-    await this.browserInstance.saveCookie();
+    await this.browserInstance.saveAuthFile();
   };
 }

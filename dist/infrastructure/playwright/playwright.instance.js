@@ -37,14 +37,14 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         return this._pageObj;
     }
     _channelId;
-    cookieFilePath;
+    authFilePath;
     youtubeLocale;
     pages = [];
     launchOptions;
-    constructor({ channelId, cookieFilePath, youtubeLocale, pages, launchOptions, }) {
+    constructor({ channelId, authFilePath, youtubeLocale, pages, launchOptions, }) {
         super();
         this._channelId = channelId;
-        this.cookieFilePath = cookieFilePath;
+        this.authFilePath = authFilePath;
         this.youtubeLocale = youtubeLocale;
         this.pages = pages;
         this.launchOptions = launchOptions;
@@ -72,16 +72,15 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         return this._channelId;
     }
     goLoginPage = async () => {
-        await this.openBrowser(false);
+        await this.openBrowser({ headless: false, setAuth: false });
         const page = await this.openPage();
         await this.goto(`https://studio.youtube.com/channel/${this.channelId}`, page);
         return page;
     };
     launch = async () => {
         await this.closeBrowser();
-        await this.openBrowser();
         try {
-            await this.setCookie();
+            await this.openBrowser();
             await this.checkValidLogin();
         }
         catch (error) {
@@ -127,20 +126,28 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         }
         await page.close();
     };
-    openBrowser = async (headless) => {
+    openBrowser = async (initConfig) => {
+        const { headless, setAuth } = initConfig
+            ? initConfig
+            : { headless: true, setAuth: true };
         if (this.browserContext)
             return;
         const browser = await playwright_1.chromium.launch({
+            headless,
             ...this.launchOptions,
-            ...(headless === undefined
-                ? {}
-                : {
-                    headless,
-                }),
         });
-        this.browserContext = await browser.newContext({
-            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-        });
+        if (setAuth) {
+            const auth = await this.getAuth();
+            this.browserContext = await browser.newContext({
+                storageState: auth,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            });
+        }
+        else {
+            this.browserContext = await browser.newContext({
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            });
+        }
     };
     closeBrowser = async () => {
         if (!this.browserContext)
@@ -166,22 +173,21 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
             throw new Error(`[ERROR] Browser Instance: Browser Not Launched`);
         }
     };
-    setCookie = async () => {
-        this.browserLaunchCheck();
+    getAuth = async () => {
         try {
-            const cookies = await fs_1.default.promises
-                .readFile(this.cookieFilePath, { encoding: "utf-8" })
+            const auth = await fs_1.default.promises
+                .readFile(this.authFilePath, { encoding: "utf-8" })
                 .then(JSON.parse);
-            this.browserContext.addCookies(cookies);
+            return auth;
         }
         catch (error) {
-            throw new Error(`[ERROR] Cannot Set Cookies`);
+            throw new Error(`[ERROR] Cannot Get AuthFile`);
         }
     };
-    saveCookie = async () => {
+    saveAuthFile = async () => {
         this.browserLaunchCheck();
-        const cookies = await this.browserContext.cookies("https://www.youtube.com");
-        await fs_1.default.promises.writeFile(this.cookieFilePath, JSON.stringify(cookies));
+        const auth = await this.browserContext.storageState();
+        await fs_1.default.promises.writeFile(this.authFilePath, JSON.stringify(auth));
     };
     existFill = async ({ page, querySelector, inputStr, delayMs, maxTryCount, }) => {
         if (delayMs === undefined)

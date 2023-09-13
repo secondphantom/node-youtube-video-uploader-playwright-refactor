@@ -16,11 +16,11 @@ export declare class PlaywrightInstance extends BrowserInstance {
         };
     };
     private _channelId;
-    private cookieFilePath;
+    private authFilePath;
     private youtubeLocale;
     private pages;
     private launchOptions;
-    constructor({ channelId, cookieFilePath, youtubeLocale, pages, launchOptions, }: Required<GetInstanceInput>);
+    constructor({ channelId, authFilePath, youtubeLocale, pages, launchOptions, }: Required<GetInstanceInput>);
     get channelId(): string;
     goLoginPage: () => Promise<Page>;
     launch: () => Promise<void>;
@@ -34,8 +34,8 @@ export declare class PlaywrightInstance extends BrowserInstance {
     private openPage;
     reloadPage: (dto: ReloadPageDto) => Promise<void>;
     private browserLaunchCheck;
-    private setCookie;
-    saveCookie: () => Promise<void>;
+    private getAuth;
+    saveAuthFile: () => Promise<void>;
     existFill: ({ page, querySelector, inputStr, delayMs, maxTryCount, }: {
         page: Page;
         querySelector: string;

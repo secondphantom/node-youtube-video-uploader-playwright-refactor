@@ -11,7 +11,7 @@ describe.only("Service Login", () => {
     browserInstance = PlaywrightInstance.getInstance({
       channelId: process.env.CHANNEL_ID!,
       youtubeLocale: process.env.YOUTUBE_LOCALE!,
-      cookieFilePath: process.env.COOKIE_FILE_PATH!,
+      authFilePath: process.env.AUTH_FILE_PATH!,
       pages: ["video", "comment"],
       launchOptions: {
         headless: false,

@@ -29,11 +29,11 @@ The default quota was too small, so I considered uploading a video to a 'crawler
   - [ ] pin
 
 ## Example
-***Please add .gitignore for 'cookieFilePath' path.***
+***Please add .gitignore for 'authFilePath' path.***
 
 ```ts
 const youtubeUtilConfig = {
-	cookieFilePath: "/cookie.json";
+	authFilePath: "/auth.json";
 	channelId: '_w_XCecvZ3GgxabnIz-w';
 	youtubeLocale: 'ko';
 	pages: ["video"];
@@ -66,14 +66,14 @@ await youtubeUtil.upload(uploadVideoDto);
 ```
 
 ## Usage
-***Please add .gitignore for 'cookieFilePath' path.***
+***Please add .gitignore for 'authFilePath' path.***
 ### New Class
 - playwright [launch options](https://playwright.dev/docs/api/class-browsertype#browser-type-launch-persistent-context) headless `true` and `false` support
 
 ```ts
 interface YoutubeUtilConfig {
-	// Please add .gitignore for 'cookieFilePath' path
-	cookieFilePath: string;
+	// Please add .gitignore for 'authFilePath' path
+	authFilePath: string;
 	// example: UC_w_XCecvZ3GgxabnIz-w
 	channelId: string;
 	// for schedule date
@@ -87,7 +87,7 @@ interface YoutubeUtilConfig {
 }
 
 const youtubeUtilConfig:YoutubeUtilConfig = {
-	cookieFilePath: "/cookie.json";
+	authFilePath: "/auth.json";
 	channelId: 'UC_w_XCecvZ3GgxabnIz-w';
 	youtubeLocale: 'ko';
 	pages?: ["video"];

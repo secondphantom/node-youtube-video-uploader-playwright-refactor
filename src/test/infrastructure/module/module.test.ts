@@ -6,7 +6,7 @@ dotenv.config();
 describe("Module Test", () => {
   const youtubeUtil = new YoutubeUtil({
     channelId: process.env.CHANNEL_ID!,
-    cookieFilePath: process.env.COOKIE_FILE_PATH!,
+    authFilePath: process.env.AUTH_FILE_PATH!,
     youtubeLocale: "ko-KR",
     pages: ["video"],
     launchOptions: {
@@ -14,14 +14,14 @@ describe("Module Test", () => {
     },
   });
 
-  describe.skip("Login", () => {
+  describe.only("Login", () => {
     test("valid login", async () => {
       const { isLogin } = await youtubeUtil.login();
       expect(isLogin).toEqual(true);
     }, 120000);
   });
 
-  describe.only("Browser", () => {
+  describe.skip("Browser", () => {
     test("Reload Page", async () => {
       await youtubeUtil.login();
       try {
