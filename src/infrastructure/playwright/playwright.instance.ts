@@ -176,9 +176,10 @@ export class PlaywrightInstance extends BrowserInstance {
     if (this.browserContext) return;
 
     const browser = await chromium.launch({
-      headless,
+      headless: headless === undefined ? true : false,
       ...this.launchOptions,
     });
+
     if (setAuth) {
       const auth = await this.getAuth();
       this.browserContext = await browser.newContext({

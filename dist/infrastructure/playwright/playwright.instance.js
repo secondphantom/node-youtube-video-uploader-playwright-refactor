@@ -133,7 +133,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         if (this.browserContext)
             return;
         const browser = await playwright_1.chromium.launch({
-            headless,
+            headless: headless === undefined ? true : false,
             ...this.launchOptions,
         });
         if (setAuth) {

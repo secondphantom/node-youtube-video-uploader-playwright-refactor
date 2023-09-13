@@ -34,7 +34,7 @@ The default quota was too small, so I considered uploading a video to a 'crawler
 ```ts
 const youtubeUtilConfig = {
 	authFilePath: "/auth.json";
-	channelId: '_w_XCecvZ3GgxabnIz-w';
+	channelId: 'UC_w_XCecvZ3GgxabnIz-w';
 	youtubeLocale: 'ko';
 	pages: ["video"];
 	launchOptions: {
