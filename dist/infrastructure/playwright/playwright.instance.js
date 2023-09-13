@@ -80,7 +80,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     launch = async () => {
         await this.closeBrowser();
         try {
-            await this.openBrowser();
+            await this.openBrowser({ setAuth: true });
             await this.checkValidLogin();
         }
         catch (error) {

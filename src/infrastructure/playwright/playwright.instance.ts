@@ -107,7 +107,7 @@ export class PlaywrightInstance extends BrowserInstance {
     await this.closeBrowser();
 
     try {
-      await this.openBrowser();
+      await this.openBrowser({ setAuth: true });
       await this.checkValidLogin();
     } catch (error: any) {
       await this.closeBrowser();
