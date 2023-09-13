@@ -97,7 +97,7 @@ export class PlaywrightInstance extends BrowserInstance {
     await this.openBrowser(false);
     const page = await this.openPage();
     await this.goto(
-      `https://studio.youtube.com/channel/UC${this.channelId}`,
+      `https://studio.youtube.com/channel/${this.channelId}`,
       page
     );
     return page;
@@ -120,7 +120,7 @@ export class PlaywrightInstance extends BrowserInstance {
       //@ts-ignore
       this._pageObj[pageKey].page = page;
       await this.goto(
-        `https://studio.youtube.com/channel/UC${this.channelId}`,
+        `https://studio.youtube.com/channel/${this.channelId}`,
         page
       );
     }
@@ -148,7 +148,7 @@ export class PlaywrightInstance extends BrowserInstance {
 
   checkValidLogin = async () => {
     const page = await this.openPage();
-    const url = `https://studio.youtube.com/channel/UC${this.channelId}`;
+    const url = `https://studio.youtube.com/channel/${this.channelId}`;
     await this.goto(url, page);
 
     const pageUrl = page.url();

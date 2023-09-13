@@ -1,6 +1,7 @@
 import { PlaywrightInstance } from "../../../infrastructure/playwright/playwright.instance";
 import { LoginService } from "../../../application/service/login.service";
 import dotenv from "dotenv";
+import { delay } from "../../../infrastructure/common.method";
 dotenv.config();
 
 describe.only("Service Login", () => {
@@ -13,7 +14,7 @@ describe.only("Service Login", () => {
       cookieFilePath: process.env.COOKIE_FILE_PATH!,
       pages: ["video", "comment"],
       launchOptions: {
-        headless: true,
+        headless: false,
       },
     });
     loginService = LoginService.getInstance(browserInstance);
@@ -27,6 +28,7 @@ describe.only("Service Login", () => {
     test("Success", async () => {
       const { isLogin } = await loginService.login();
       expect(isLogin).toEqual(true);
+      await delay(10000);
     }, 120000);
   });
 });

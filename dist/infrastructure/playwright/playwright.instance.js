@@ -74,7 +74,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     goLoginPage = async () => {
         await this.openBrowser(false);
         const page = await this.openPage();
-        await this.goto(`https://studio.youtube.com/channel/UC${this.channelId}`, page);
+        await this.goto(`https://studio.youtube.com/channel/${this.channelId}`, page);
         return page;
     };
     launch = async () => {
@@ -94,7 +94,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
             const page = await this.browserContext.newPage();
             //@ts-ignore
             this._pageObj[pageKey].page = page;
-            await this.goto(`https://studio.youtube.com/channel/UC${this.channelId}`, page);
+            await this.goto(`https://studio.youtube.com/channel/${this.channelId}`, page);
         }
     };
     uploadVideo = async (dto) => {
@@ -115,7 +115,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     };
     checkValidLogin = async () => {
         const page = await this.openPage();
-        const url = `https://studio.youtube.com/channel/UC${this.channelId}`;
+        const url = `https://studio.youtube.com/channel/${this.channelId}`;
         await this.goto(url, page);
         const pageUrl = page.url();
         if (pageUrl !== url) {

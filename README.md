@@ -74,7 +74,7 @@ await youtubeUtil.upload(uploadVideoDto);
 interface YoutubeUtilConfig {
 	// Please add .gitignore for 'cookieFilePath' path
 	cookieFilePath: string;
-	// example: _w_XCecvZ3GgxabnIz-w
+	// example: UC_w_XCecvZ3GgxabnIz-w
 	channelId: string;
 	// for schedule date
 	youtubeLocale: string;
@@ -88,7 +88,7 @@ interface YoutubeUtilConfig {
 
 const youtubeUtilConfig:YoutubeUtilConfig = {
 	cookieFilePath: "/cookie.json";
-	channelId: '_w_XCecvZ3GgxabnIz-w';
+	channelId: 'UC_w_XCecvZ3GgxabnIz-w';
 	youtubeLocale: 'ko';
 	pages?: ["video"];
 	launchOptions?: {
