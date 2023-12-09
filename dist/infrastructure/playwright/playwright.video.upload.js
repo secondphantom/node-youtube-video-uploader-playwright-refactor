@@ -283,7 +283,7 @@ class PlaywrightUpload {
         const { scheduleDate, scheduleTime } = this.getIntlFormatDateTime(schedule);
         await this.playwrightInstance.existClick({
             page,
-            querySelector: "#schedule-radio-button",
+            querySelector: "#second-container-expand-button",
         });
         await this.playwrightInstance.existClick({
             page,
