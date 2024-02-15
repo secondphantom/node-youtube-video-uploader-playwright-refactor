@@ -19,4 +19,3 @@ class VideoService {
     };
 }
 exports.VideoService = VideoService;
-//# sourceMappingURL=video.service.js.map

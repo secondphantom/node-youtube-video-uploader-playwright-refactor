@@ -37,4 +37,3 @@ class LoginController {
     };
 }
 exports.LoginController = LoginController;
-//# sourceMappingURL=login.controller.js.map

@@ -37,4 +37,3 @@ class VideoController {
     };
 }
 exports.VideoController = VideoController;
-//# sourceMappingURL=video.controller.js.map

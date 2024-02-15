@@ -5,4 +5,3 @@ class CommentService {
     writeComment = async () => { };
 }
 exports.CommentService = CommentService;
-//# sourceMappingURL=comment.service.js.map

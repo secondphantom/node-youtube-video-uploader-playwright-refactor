@@ -29,4 +29,3 @@ class BrowserValidator {
     };
 }
 exports.BrowserValidator = BrowserValidator;
-//# sourceMappingURL=browser.validator.js.map

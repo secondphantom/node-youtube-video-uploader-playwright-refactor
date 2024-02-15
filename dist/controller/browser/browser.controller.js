@@ -39,4 +39,3 @@ class BrowserController {
     };
 }
 exports.BrowserController = BrowserController;
-//# sourceMappingURL=browser.controller.js.map

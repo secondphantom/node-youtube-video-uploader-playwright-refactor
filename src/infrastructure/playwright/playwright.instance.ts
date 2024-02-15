@@ -146,10 +146,19 @@ export class PlaywrightInstance extends BrowserInstance {
     await page.goto(url, { waitUntil: "load" });
   };
 
+  private delay = (timeout: number) =>
+    new Promise((res, rej) => {
+      setTimeout(() => {
+        res(null);
+      }, timeout);
+    });
+
   checkValidLogin = async () => {
     const page = await this.openPage();
     const url = `https://studio.youtube.com/channel/${this.channelId}`;
-    await this.goto(url, page);
+
+    await page.goto(url, { waitUntil: "networkidle" });
+    await this.delay(1500);
 
     const pageUrl = page.url();
     if (pageUrl !== url) {

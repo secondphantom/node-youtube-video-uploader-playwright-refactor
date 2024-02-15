@@ -28,6 +28,7 @@ export declare class PlaywrightInstance extends BrowserInstance {
         videoId: string;
     }>;
     private goto;
+    private delay;
     checkValidLogin: () => Promise<void>;
     private openBrowser;
     private closeBrowser;

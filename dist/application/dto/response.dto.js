@@ -11,4 +11,3 @@ class ResponseDto {
     }
 }
 exports.ResponseDto = ResponseDto;
-//# sourceMappingURL=response.dto.js.map

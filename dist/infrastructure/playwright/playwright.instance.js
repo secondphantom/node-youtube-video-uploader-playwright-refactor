@@ -112,10 +112,16 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     goto = async (url, page) => {
         await page.goto(url, { waitUntil: "load" });
     };
+    delay = (timeout) => new Promise((res, rej) => {
+        setTimeout(() => {
+            res(null);
+        }, timeout);
+    });
     checkValidLogin = async () => {
         const page = await this.openPage();
         const url = `https://studio.youtube.com/channel/${this.channelId}`;
-        await this.goto(url, page);
+        await page.goto(url, { waitUntil: "networkidle" });
+        await this.delay(1500);
         const pageUrl = page.url();
         if (pageUrl !== url) {
             throw new Error(`[ERROR] BrowserInstance: Login required ChannelId: ${this.channelId}`);
@@ -241,4 +247,3 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
     getYoutubeLocale = () => this.youtubeLocale;
 }
 exports.PlaywrightInstance = PlaywrightInstance;
-//# sourceMappingURL=playwright.instance.js.map

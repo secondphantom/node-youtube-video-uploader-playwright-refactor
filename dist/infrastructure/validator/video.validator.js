@@ -67,4 +67,3 @@ class VideoValidator {
     };
 }
 exports.VideoValidator = VideoValidator;
-//# sourceMappingURL=video.validator.js.map

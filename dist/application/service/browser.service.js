@@ -18,4 +18,3 @@ class BrowserService {
     };
 }
 exports.BrowserService = BrowserService;
-//# sourceMappingURL=browser.service.js.map

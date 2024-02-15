@@ -46,17 +46,18 @@ describe("Playwright Browser Instance", () => {
       await delay(10000);
     });
 
-    test.skip("Check Valid Login", async () => {
+    test("Check Valid Login", async () => {
       let error;
       try {
         await browserInstance["checkValidLogin"]();
       } catch (e) {
         error = e;
       }
+      await delay(10000);
       expect(error).toEqual(expect.anything());
     });
 
-    test.only("Get Channel Id", async () => {
+    test.skip("Get Channel Id", async () => {
       const channelId = browserInstance.channelId;
       expect(channelId).toEqual(process.env.CHANNEL_ID!);
     });

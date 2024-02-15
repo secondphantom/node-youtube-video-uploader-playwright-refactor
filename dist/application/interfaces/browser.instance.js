@@ -7,4 +7,3 @@ class BrowserInstance {
     }
 }
 exports.BrowserInstance = BrowserInstance;
-//# sourceMappingURL=browser.instance.js.map

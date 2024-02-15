@@ -1,12 +1,13 @@
 {
   "name": "youtube-video-uploader-playwright",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "watch": "tsc -w",
-    "test": "cross-env NODE_ENV=test DOTENV_CONFIG_PATH=./.env.test jest --runInBand --silent=false"
+    "test": "cross-env NODE_ENV=test DOTENV_CONFIG_PATH=./.env.test jest --runInBand --silent=false",
+    "build": "rm -rf dist && tsc"
   },
   "keywords": [],
   "author": "Second Phantom <second2phantom@gmail.com>",

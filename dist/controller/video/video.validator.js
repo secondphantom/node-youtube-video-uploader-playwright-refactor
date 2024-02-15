@@ -35,4 +35,3 @@ class VideoValidatorController {
     };
 }
 exports.VideoValidatorController = VideoValidatorController;
-//# sourceMappingURL=video.validator.js.map
