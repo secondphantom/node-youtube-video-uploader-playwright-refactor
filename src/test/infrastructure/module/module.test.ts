@@ -10,7 +10,7 @@ describe("Module Test", () => {
     youtubeLocale: "ko-KR",
     pages: ["video"],
     launchOptions: {
-      headless: false,
+      // headless: false,
     },
   });
 

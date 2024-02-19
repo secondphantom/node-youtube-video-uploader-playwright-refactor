@@ -81,7 +81,6 @@ export class PlaywrightInstance extends BrowserInstance {
       ...(launchOptions ? (launchOptions.args ? launchOptions.args : []) : []),
     ];
     launchOptions = {
-      headless: true,
       ...launchOptions,
       ignoreDefaultArgs,
       args,

@@ -46,7 +46,7 @@ describe("Playwright Browser Instance", () => {
       await delay(10000);
     });
 
-    test("Check Valid Login", async () => {
+    test.only("Check Valid Login", async () => {
       let error;
       try {
         await browserInstance["checkValidLogin"]();
