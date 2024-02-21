@@ -9,4 +9,5 @@ export declare class LoginService {
         isLogin: boolean;
     }>;
     private updateAuth;
+    private updateAuthBySwitch;
 }

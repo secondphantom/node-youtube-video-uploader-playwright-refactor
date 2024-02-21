@@ -102,6 +102,17 @@ export class PlaywrightInstance extends BrowserInstance {
     return page;
   };
 
+  goSwitchPage = async () => {
+    await this.openBrowser({ headless: false, setAuth: true });
+    const page = await this.openPage();
+    await this.goto(
+      `https://studio.youtube.com/channel/${this.channelId}`,
+      page
+    );
+    await this.delay(1500);
+    return page;
+  };
+
   launch = async () => {
     await this.closeBrowser();
 
@@ -158,18 +169,25 @@ export class PlaywrightInstance extends BrowserInstance {
 
     await page.goto(url, { waitUntil: "networkidle" });
     await this.delay(1500);
+    await page.goto(url, { waitUntil: "networkidle" });
+    await this.delay(1500);
 
     const pageUrl = page.url();
+    const selectAccountLinkEle = await page.$("#selectaccount-link");
     if (pageUrl !== url) {
       throw new Error(
-        `[ERROR] BrowserInstance: Login required ChannelId: ${this.channelId}`
+        `[ERROR:Auth] BrowserInstance: Login required ChannelId: ${this.channelId}`
       );
     }
+
     const monkeyEle = await page.$("#monkey");
     if (monkeyEle !== null) {
       throw new Error(
-        `[ERROR] BrowserInstance: UserData is not compatible. Please change or update UserDate`
+        `[ERROR:Auth] BrowserInstance: Auth is not compatible. Please change or update Auth`
       );
+    }
+    if (pageUrl === url && selectAccountLinkEle !== null) {
+      throw new Error(`[ERROR:Switch] BrowserInstance: Need to switch account`);
     }
     await page.close();
   };

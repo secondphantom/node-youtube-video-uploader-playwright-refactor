@@ -23,6 +23,7 @@ export declare class PlaywrightInstance extends BrowserInstance {
     constructor({ channelId, authFilePath, youtubeLocale, pages, launchOptions, }: Required<GetInstanceInput>);
     get channelId(): string;
     goLoginPage: () => Promise<Page>;
+    goSwitchPage: () => Promise<Page>;
     launch: () => Promise<void>;
     uploadVideo: (dto: UploadVideoDto) => Promise<{
         videoId: string;

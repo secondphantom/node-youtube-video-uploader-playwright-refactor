@@ -48,5 +48,6 @@ export declare abstract class BrowserInstance {
     abstract reloadPage: (dto: ReloadPageDto) => Promise<void>;
     abstract saveAuthFile: () => Promise<void>;
     abstract goLoginPage: () => Promise<Page>;
+    abstract goSwitchPage: () => Promise<Page>;
     abstract uploadVideo: (dto: UploadVideoDto) => Promise<VideoIdSchema>;
 }

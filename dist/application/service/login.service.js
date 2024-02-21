@@ -45,7 +45,18 @@ class LoginService {
         }
         catch (error) {
             console.log(error.message);
-            await this.updateAuth();
+            const groups = error.message.match(/\[ERROR:(?<type>.+)\]/)?.groups;
+            if (groups) {
+                const { type } = groups;
+                switch (type.toLowerCase()) {
+                    case "switch":
+                        await this.updateAuthBySwitch();
+                        break;
+                    default:
+                        await this.updateAuth();
+                        break;
+                }
+            }
             await this.browserInstance.launch();
         }
         return { isLogin: true };
@@ -54,6 +65,12 @@ class LoginService {
         await this.browserInstance.goLoginPage();
         const channelId = this.browserInstance.channelId;
         await this.rl.question(`Login youtube channelId: ${channelId}.\nChannelUrl : https://www.youtube.com/channel/${channelId}\nDid you login? (Enter)\n`);
+        await this.browserInstance.saveAuthFile();
+    };
+    updateAuthBySwitch = async () => {
+        await this.browserInstance.goSwitchPage();
+        const channelId = this.browserInstance.channelId;
+        await this.rl.question(`Switch youtube channelId: ${channelId}.\nChannelUrl : https://www.youtube.com/channel/${channelId}\nDid you switch channel? (Enter)\n`);
         await this.browserInstance.saveAuthFile();
     };
 }
