@@ -133,6 +133,11 @@ export class PlaywrightInstance extends BrowserInstance {
         `https://studio.youtube.com/channel/${this.channelId}`,
         page
       );
+      await this.delay(1500);
+      await this.goto(
+        `https://studio.youtube.com/channel/${this.channelId}`,
+        page
+      );
     }
   };
 
@@ -153,7 +158,7 @@ export class PlaywrightInstance extends BrowserInstance {
   };
 
   private goto = async (url: string, page: Page) => {
-    await page.goto(url, { waitUntil: "load" });
+    await page.goto(url, { waitUntil: "networkidle" });
   };
 
   private delay = (timeout: number) =>

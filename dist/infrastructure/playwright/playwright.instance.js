@@ -100,6 +100,8 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
             //@ts-ignore
             this._pageObj[pageKey].page = page;
             await this.goto(`https://studio.youtube.com/channel/${this.channelId}`, page);
+            await this.delay(1500);
+            await this.goto(`https://studio.youtube.com/channel/${this.channelId}`, page);
         }
     };
     uploadVideo = async (dto) => {
@@ -116,7 +118,7 @@ class PlaywrightInstance extends browser_instance_1.BrowserInstance {
         }
     };
     goto = async (url, page) => {
-        await page.goto(url, { waitUntil: "load" });
+        await page.goto(url, { waitUntil: "networkidle" });
     };
     delay = (timeout) => new Promise((res, rej) => {
         setTimeout(() => {
